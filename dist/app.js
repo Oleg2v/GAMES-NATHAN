@@ -1,12 +1,15 @@
 import { LEVELS, ITEMS, createGame, stepGame, useItem, nextLevel, getStats, setLocale, clearInputBuffer } from './game-core.js';
 import { createRenderer } from './renderer.js';
 import { LOCALES, getCopy, translate } from './i18n.js';
+import { getDpadDirections } from './touch-input.js';
 
 const $ = id => document.getElementById(id);
 const canvas = $('game'), input = {}, assets = {};
 const stageButtons = [...document.querySelectorAll('[data-level]')];
 const touchButtons = [...document.querySelectorAll('[data-control]')];
 const keyboardHeld = new Set(), pointerHeld = new Map();
+const dpad = document.querySelector('.dpad'), dpadHeld = new Map(), pointerDownAt = new Map();
+const movementActions = ['up', 'down', 'left', 'right'];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let handheld = false, landscape = innerWidth > innerHeight, layoutFrame = 0;
 let state = null, selectedLevel = 0, locale = 'ru', renderer, last = 0, lastHud = 0;
@@ -37,13 +40,14 @@ function clearInput() {
   const button = document.querySelector(`[data-control="${action}"]`);
   if (typeof id === 'number' && button?.hasPointerCapture(id)) button.releasePointerCapture(id);
  }
- keyboardHeld.clear(); pointerHeld.clear();
+ for (const id of dpadHeld.keys()) if (dpad.hasPointerCapture(id)) dpad.releasePointerCapture(id);
+ keyboardHeld.clear(); pointerHeld.clear(); dpadHeld.clear(); pointerDownAt.clear(); dpad.classList.remove('engaged');
  for (const key in input) delete input[key];
  if (state) clearInputBuffer(state);
  document.querySelectorAll('.pressed').forEach(el => el.classList.remove('pressed'));
 }
 function syncAction(action) {
- input[action] = [...keyboardHeld].some(code => keyMap[code] === action) || [...pointerHeld.values()].some(value => value === action);
+ input[action] = [...keyboardHeld].some(code => keyMap[code] === action) || [...pointerHeld.values()].some(value => value === action) || [...dpadHeld.values()].some(actions => actions.includes(action));
  document.querySelector(`[data-control="${action}"]`)?.classList.toggle('pressed', input[action]);
 }
 function updateLayout() {
@@ -268,24 +272,44 @@ window.addEventListener('keyup', event => { if (keyMap[event.code]) { keyboardHe
 window.addEventListener('blur', () => { clearInput(); if (state?.mode === 'playing') pause(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { clearInput(); if (state?.mode === 'playing') pause(); } });
 function releasePointer(event) {
+ if (dpadHeld.delete(event.pointerId)) {
+  movementActions.forEach(syncAction); dpad.classList.toggle('engaged', dpadHeld.size > 0);
+ }
  const action = pointerHeld.get(event.pointerId);
  if (!action) return;
- pointerHeld.delete(event.pointerId); syncAction(action);
+ const heldMs = performance.now() - (pointerDownAt.get(event.pointerId) ?? -Infinity);
+ pointerHeld.delete(event.pointerId); pointerDownAt.delete(event.pointerId);
+ if (event.type === 'pointerup' && action !== 'crouch' && heldMs < 90 && state?.mode === 'playing') pulseAction(action, 90 - heldMs);
+ syncAction(action);
+}
+function pulseAction(action, duration = 100) {
+ const token = Symbol('tap'); pointerHeld.set(token, action); syncAction(action);
+ setTimeout(() => { pointerHeld.delete(token); syncAction(action); }, duration);
 }
 window.addEventListener('pointerup', releasePointer);
 window.addEventListener('pointercancel', releasePointer);
+function moveDpad(event) {
+ if (!dpadHeld.has(event.pointerId)) return;
+ dpadHeld.set(event.pointerId, getDpadDirections(event.clientX, event.clientY, dpad.getBoundingClientRect()));
+ movementActions.forEach(syncAction);
+}
+dpad.addEventListener('pointerdown', event => {
+ event.preventDefault(); if (state?.mode !== 'playing' || (event.pointerType === 'mouse' && event.button !== 0)) return;
+ dpad.setPointerCapture(event.pointerId); dpadHeld.set(event.pointerId, []); dpad.classList.add('engaged'); moveDpad(event);
+});
+dpad.addEventListener('pointermove', moveDpad);
+dpad.addEventListener('lostpointercapture', releasePointer);
+dpad.addEventListener('contextmenu', event => event.preventDefault());
 for (const button of touchButtons) {
- button.addEventListener('pointerdown', event => {
+ if (!dpad.contains(button)) button.addEventListener('pointerdown', event => {
   event.preventDefault(); if (button.disabled || state?.mode !== 'playing') return;
-  button.setPointerCapture(event.pointerId); pointerHeld.set(event.pointerId, button.dataset.control); syncAction(button.dataset.control);
+  button.setPointerCapture(event.pointerId); pointerHeld.set(event.pointerId, button.dataset.control); pointerDownAt.set(event.pointerId, performance.now()); syncAction(button.dataset.control);
  });
  button.addEventListener('lostpointercapture', releasePointer);
  button.addEventListener('contextmenu', event => event.preventDefault());
  button.addEventListener('click', event => {
   if (event.detail === 0 && !button.disabled && state?.mode === 'playing') {
-   const token = Symbol('accessible-action'), action = button.dataset.control;
-   pointerHeld.set(token, action); syncAction(action);
-   setTimeout(() => { pointerHeld.delete(token); syncAction(action); }, 100);
+   pulseAction(button.dataset.control);
   }
  });
 }

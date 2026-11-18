@@ -41,8 +41,24 @@
 </section>
 <p id="standalone-hint" class="standalone-hint" data-i18n="standaloneHint" hidden></p>
 <div class="touch-controls" dir="ltr" data-i18n-aria="touch" aria-label="Сенсорное управление">
- <div class="dpad"><button data-control="up" data-i18n-aria="up" aria-label="Вверх" disabled>↑</button><button data-control="left" data-i18n-aria="left" aria-label="Влево" disabled>←</button><button data-control="down" data-i18n-aria="down" aria-label="Вниз" disabled>↓</button><button data-control="right" data-i18n-aria="right" aria-label="Вправо" disabled>→</button></div>
- <div class="touch-actions"><button data-control="dodge" disabled><span data-i18n="dodge">РЫВОК</span><b>SPACE</b></button><button data-control="punch" disabled><span data-i18n="punch">РУКА</span><b>J</b></button><button data-control="kick" disabled><span data-i18n="kick">НОГА</span><b>K</b></button><button data-control="throw" disabled><span data-i18n="throw">БРОСОК</span><b>E / L</b></button><button data-control="crouch" disabled><span data-i18n="crouch">ПРИСЕСТЬ</span><b>C</b></button><button data-control="special" class="special-button" disabled><span data-i18n="special">ЯРОСТЬ</span><b>Q</b></button></div>
+ <div class="touch-cluster touch-move">
+  <button class="pad-shoulder shoulder-left" data-control="crouch" disabled><b aria-hidden="true">L1</b><span data-i18n="crouch">ПРИСЕСТЬ</span></button>
+  <div id="dpad" class="dpad" role="group" data-i18n-aria="movement" aria-label="Движение">
+   <button data-control="up" data-i18n-aria="up" aria-label="Вверх" disabled>↑</button>
+   <button data-control="left" data-i18n-aria="left" aria-label="Влево" disabled>←</button>
+   <button data-control="right" data-i18n-aria="right" aria-label="Вправо" disabled>→</button>
+   <button data-control="down" data-i18n-aria="down" aria-label="Вниз" disabled>↓</button>
+  </div>
+ </div>
+ <div class="touch-cluster touch-combat">
+  <button class="pad-shoulder shoulder-right special-button" data-control="special" disabled><b aria-hidden="true">R1</b><span data-i18n="special">ЯРОСТЬ</span></button>
+  <div class="touch-actions gamepad-face" role="group" data-i18n-aria="combatControls" aria-label="Боевые кнопки">
+   <button data-control="throw" class="face-triangle" disabled><span class="pad-symbol" aria-hidden="true">△</span><span class="pad-label" data-i18n="throw">БРОСОК</span></button>
+   <button data-control="kick" class="face-circle" disabled><span class="pad-symbol" aria-hidden="true">○</span><span class="pad-label" data-i18n="kick">НОГА</span></button>
+   <button data-control="dodge" class="face-cross" disabled><span class="pad-symbol" aria-hidden="true">×</span><span class="pad-label" data-i18n="dodge">РЫВОК</span></button>
+   <button data-control="punch" class="face-square" disabled><span class="pad-symbol" aria-hidden="true">□</span><span class="pad-label" data-i18n="punch">РУКА</span></button>
+  </div>
+ </div>
 </div>
 <section class="loadout" aria-labelledby="loadout-title"><div class="section-heading"><h2 id="loadout-title" data-i18n="loadoutTitle">КАРМАНЫ НАТАНА</h2><span id="item-help" data-i18n="itemHelp">КЛАВИШИ 1–5 · УСИЛЕНИЯ НА 120 СЕК.</span></div><div class="item-grid" id="items"></div></section>
 <section class="route" aria-labelledby="route-title"><div class="section-heading"><h2 id="route-title" data-i18n="routeTitle">ТРИ МЕСТА. ОДИН ПЛАН.</h2><span data-i18n="routeHelp">ВЫБОР СТАРТОВОГО УРОВНЯ</span></div><div class="stage-grid" id="stages">
@@ -54,7 +70,7 @@
  <details class="help-panel"><summary data-i18n="controls">КАК ИГРАТЬ</summary><div class="key-guide">
   <span><kbd>W A S D</kbd> / <kbd>↑ ← ↓ →</kbd><span data-i18n="movement">движение</span></span>
   <span><kbd>J</kbd><span data-i18n="punch">РУКА</span></span><span><kbd>K</kbd><span data-i18n="kick">НОГА</span></span><span><kbd>E / L</kbd><span data-i18n="throw">БРОСОК</span></span><span><kbd>Q</kbd><span data-i18n="special">ЯРОСТЬ</span></span><span><kbd>C</kbd><span data-i18n="crouch">ПРИСЕСТЬ</span></span><span><kbd>SPACE</kbd><span data-i18n="dodge">РЫВОК</span></span><span><kbd>1–5</kbd><span data-i18n="itemsControl">предметы</span></span><span><kbd>ESC / P</kbd><span data-i18n="pauseControl">пауза</span></span>
- </div><div class="help-copy"><p data-i18n="controlIntro"></p><p data-i18n="controlCombos"></p><p data-i18n="controlThrow"></p><p data-i18n="controlCrouch"></p><p data-i18n="controlSpecial"></p></div></details>
+ </div><div class="help-copy"><p class="mobile-help" data-i18n="mobileControlsHelp"></p><p data-i18n="controlIntro"></p><p data-i18n="controlCombos"></p><p data-i18n="controlThrow"></p><p data-i18n="controlCrouch"></p><p data-i18n="controlSpecial"></p></div></details>
  <div class="footer-meta"><span dir="ltr">GAMES—NATHAN <b>© 2026</b></span><span data-i18n="fiction">Все эффекты предметов вымышлены и существуют только в игре.</span></div>
 </footer>
 </main></div>
