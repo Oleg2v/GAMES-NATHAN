@@ -59,6 +59,7 @@ function updateLayout() {
  const prompt = $('rotate-prompt');
  if (prompt) prompt.hidden = !rotate;
  if (wasLandscape !== landscape) clearInput();
+ if (renderer) renderer.resize(handheld && landscape && state ? innerWidth : 960, handheld && landscape && state ? innerHeight : 540);
  if (ready && !state) updateStart();
  if (rotate && state?.mode === 'playing') { state.mode = 'paused'; showDialog('paused', false); $('rotate-menu')?.focus({ preventScroll:true }); }
 }
@@ -128,6 +129,8 @@ function setLocation() {
 function updateStart() {
  $('start').innerHTML = (ready ? chosenStage ? t('startLevel', { level:copy().levels[selectedLevel].name }) : t(handheld ? 'startMobile' : 'start') : t('loading')) + arrow();
  $('load-status').textContent = bidi(t(loadFailed ? 'loadFailed' : ready ? handheld ? 'startHintMobile' : 'startHint' : 'prepare'));
+ const hint = $('standalone-hint');
+ if (hint) hint.hidden = !(handheld && !standaloneMode() && !document.fullscreenEnabled);
 }
 function updateItems() {
  itemButtons.forEach((button, i) => {
@@ -171,6 +174,7 @@ function showToast(kind = 'level') { toastKind = kind; toastTimer = 2; renderToa
 function saveRecord() { if (state && state.score > record) { record = state.score; try { localStorage.setItem('nathan-record', String(record)); } catch {} updateRecord(); } }
 function startGame() {
  if (!ready) return;
+ if (handheld && landscape) void enterFullscreen(false);
  saveRecord(); state = createGame(selectedLevel, locale); state.reducedMotion = reduced; clearInput(); ensureAudio();
  $('screen').classList.add('in-game'); $('menu').hidden = true; $('dialog').hidden = true; $('hud').hidden = false; $('pause').disabled = false; activeDialog = '';
  setLocation(); showToast(); canvas.focus({ preventScroll:true }); updateHud(); updateLayout();
@@ -190,7 +194,7 @@ function showDialog(mode, focus = true) {
  if (mode !== 'paused') saveRecord(); syncAudioGain();
 }
 function pause() { if (state?.mode === 'playing') { state.mode = 'paused'; showDialog('paused'); } else if (state?.mode === 'paused') resume(); }
-function resume() { if (state?.mode !== 'paused' || document.body.classList.contains('rotate-required')) return; clearInput(); state.mode = 'playing'; activeDialog = ''; $('dialog').hidden = true; syncAudioGain(); updateTouch(); updateItems(); canvas.focus({ preventScroll:true }); }
+function resume() { if (state?.mode !== 'paused' || document.body.classList.contains('rotate-required')) return; if (handheld && landscape) void enterFullscreen(false); clearInput(); state.mode = 'playing'; activeDialog = ''; $('dialog').hidden = true; syncAudioGain(); updateTouch(); updateItems(); canvas.focus({ preventScroll:true }); }
 function activateItem(i) { if (state?.mode !== 'playing') return; useItem(state, i); updateHud(); canvas.focus({ preventScroll:true }); }
 function updateHud() {
  if (!state) return;
@@ -218,16 +222,21 @@ stageButtons.forEach(button => button.addEventListener('click', () => { if (!sta
 itemButtons.forEach((button, i) => button.addEventListener('click', () => activateItem(i)));
 document.querySelectorAll('[data-locale]').forEach(button => button.addEventListener('click', () => applyLocale(button.dataset.locale)));
 $('sound').addEventListener('click', () => { soundEnabled = !soundEnabled; try { localStorage.setItem('nathan-sound', soundEnabled ? '1' : '0'); } catch {} updateSoundLabel(); syncAudioGain(); if (soundEnabled) beep('pickup'); });
-$('fullscreen').addEventListener('click', async () => {
+function standaloneMode() { return navigator.standalone === true || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches; }
+async function enterFullscreen(reportError = true) {
  try {
-  if (document.fullscreenElement) { await document.exitFullscreen(); return; }
+  if (document.fullscreenElement || standaloneMode()) return;
   const target = handheld ? document.documentElement : document.querySelector('.cabinet');
-  if (!target.requestFullscreen) { announce(t('fullscreenError')); return; }
-  await target.requestFullscreen();
+  if (!target.requestFullscreen || !document.fullscreenEnabled) { if (reportError) announce(t('fullscreenError')); return; }
+  await target.requestFullscreen({ navigationUI:'hide' });
   if (handheld && window.screen.orientation?.lock) {
    try { await window.screen.orientation.lock('landscape'); } catch { /* Rotation remains available when orientation lock is unsupported. */ }
   }
- } catch { announce(t('fullscreenError')); }
+ } catch { if (reportError) announce(t('fullscreenError')); }
+}
+$('fullscreen').addEventListener('click', async () => {
+ if (document.fullscreenElement) { try { await document.exitFullscreen(); } catch {} }
+ else await enterFullscreen();
 });
 document.addEventListener('fullscreenchange', () => {
  if (!document.fullscreenElement) {
@@ -292,7 +301,7 @@ async function boot() {
   ]);
   Object.assign(assets, { hero, concept, atlas, enemies, enemyAtlas, throws, throwAtlas, crouch, crouchAtlas });
  } catch (error) { loadFailed = true; updateStart(); console.error('Character assets failed', error); return; }
- renderer = createRenderer(canvas, assets); ready = true; $('start').disabled = false; updateStart(); setLocation(); requestAnimationFrame(frame);
+ renderer = createRenderer(canvas, assets); ready = true; $('start').disabled = false; updateLayout(); updateStart(); setLocation(); requestAnimationFrame(frame);
 }
 let fpsTime = 0, fpsCount = 0;
 function frame(now) {
