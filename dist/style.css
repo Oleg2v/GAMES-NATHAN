@@ -76,3 +76,144 @@ html[dir="rtl"] .buff-tag{font-size:9px}
 html[dir="rtl"] .menu-art img{width:208%;height:auto;max-width:none;top:-8%;right:0;left:auto}
 html[lang="he"] body{font-family:Arial,'Segoe UI',sans-serif}
 html[lang="he"] h1,html[lang="he"] h2,html[lang="he"] .stage-label b,html[lang="he"] .dialog-card h2,html[lang="he"] .run-hud strong,html[lang="he"] .combo{font-family:Arial,'Segoe UI',sans-serif;font-weight:900}
+
+/* Phone play uses a fixed three-column control deck. The world stays 16:9. */
+body.handheld.session-active{overscroll-behavior:none}
+body.handheld.landscape.session-active{
+ --play-viewport:var(--viewport-height,100dvh);
+ --deck-top:36px;
+ --deck-bottom:58px;
+ --deck-side:clamp(122px,16.2vw,154px);
+ --arena-height:calc(var(--play-viewport) - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - var(--deck-top) - var(--deck-bottom) - 24px);
+ position:fixed;inset:0;width:100%;height:100vh;height:var(--play-viewport);overflow:hidden;background:#0b1016;touch-action:none
+}
+body.handheld.landscape.session-active .app-shell{
+ width:100%;max-width:none;height:100%;margin:0;
+ padding:calc(6px + env(safe-area-inset-top,0px)) max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px));
+ display:grid;grid-template-columns:var(--deck-side) minmax(0,1fr) var(--deck-side);
+ grid-template-rows:var(--deck-top) minmax(0,1fr) var(--deck-bottom);gap:6px;direction:ltr
+}
+body.handheld.landscape.session-active main{display:contents}
+body.handheld.landscape.session-active .topbar{grid-column:1/-1;grid-row:1;display:flex;min-width:0;padding:0;border:0;margin:0;flex-wrap:nowrap;gap:8px}
+body.handheld.landscape.session-active .brand{font-size:16px;gap:7px;letter-spacing:1px;line-height:1}
+body.handheld.landscape.session-active .brand-mark{width:27px;height:27px;font-size:23px;box-shadow:2px 2px 0 #000}
+body.handheld.landscape.session-active .brand small,
+body.handheld.landscape.session-active .edition,
+body.handheld.landscape.session-active .language-switch,
+body.handheld.landscape.session-active .section-top,
+body.handheld.landscape.session-active .game-bottom,
+body.handheld.landscape.session-active .route,
+body.handheld.landscape.session-active footer{display:none}
+body.handheld.landscape.session-active .utilities{display:contents}
+body.handheld.landscape.session-active #sound,
+body.handheld.landscape.session-active #fullscreen,
+body.handheld.landscape.session-active #pause{position:fixed;top:calc(6px + env(safe-area-inset-top,0px));height:36px;margin:0;z-index:20;background:#1a232c;border:1px solid #47535b;box-shadow:0 2px 0 #05080b;border-radius:4px}
+body.handheld.landscape.session-active #fullscreen{right:calc(max(6px,env(safe-area-inset-right,0px)));width:40px;padding:0;font-size:24px}
+body.handheld.landscape.session-active #pause{right:calc(52px + env(safe-area-inset-right,0px));width:40px;padding:0;font:20px Arial,sans-serif;color:var(--ink)}
+body.handheld.landscape.session-active #sound{right:calc(98px + env(safe-area-inset-right,0px));min-width:67px;padding:0 8px;font-size:8px;letter-spacing:0}
+body.handheld.landscape.session-active #sound b{margin-inline-start:5px}
+body.handheld.landscape.session-active .cabinet{grid-column:2;grid-row:2;display:grid;place-items:center;width:100%;height:100%;min-width:0;min-height:0;padding:0;border:0;background:#080d13;box-shadow:0 0 0 1px #39434c,0 8px 22px #0007;overflow:visible}
+body.handheld.landscape.session-active .game-top{display:contents}
+body.handheld.landscape.session-active .game-top>span{display:none}
+body.handheld.landscape.session-active .screen,
+body.handheld.landscape.session-active .screen.in-game{width:min(100%,calc(var(--arena-height) * 16 / 9));height:auto;min-height:0;max-height:none;aspect-ratio:16/9;margin:0}
+body.handheld.landscape.session-active canvas{width:100%;height:100%;object-fit:contain;outline-offset:0}
+body.handheld.landscape.session-active .touch-controls{display:contents}
+body.handheld.landscape.session-active .dpad{grid-column:1;grid-row:2;align-self:end;justify-self:center;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,43px);gap:4px;width:100%;max-width:146px;margin:0 0 12px;direction:ltr}
+body.handheld.landscape.session-active .dpad button{min-width:0;min-height:43px;height:43px;border-radius:8px;font:25px Arial,sans-serif;background:#202c36d9;border:1px solid #65747e;box-shadow:0 3px 0 #05080b}
+body.handheld.landscape.session-active .touch-actions{grid-column:3;grid-row:2;align-self:end;justify-self:center;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,43px);gap:5px;width:100%;max-width:154px;margin:0 0 12px;direction:ltr}
+body.handheld.landscape.session-active .touch-actions button{height:43px;min-height:43px;min-width:0;padding:4px 3px;font-size:clamp(8px,1.15vw,10px);line-height:1.2;letter-spacing:0;border-radius:8px;border:1px solid #65747e;background:#202c36d9;box-shadow:0 3px 0 #05080b}
+body.handheld.landscape.session-active .touch-actions button b{display:none}
+body.handheld.landscape.session-active .touch-actions button[data-control="punch"],
+body.handheld.landscape.session-active .touch-actions button[data-control="kick"]{border-color:#c8914e;color:#ffe1ae;background:#4a3423}
+body.handheld.landscape.session-active .touch-controls button.pressed{background:#e5a04e;border-color:#ffce8d;color:#111923;box-shadow:0 1px 0 #05080b;transform:translateY(2px)}
+body.handheld.landscape.session-active .touch-controls button:disabled{opacity:.4}
+body.handheld.landscape.session-active .touch-controls .special-button.ready{background:#735024;border-color:#ffd27b;color:#fff3d3;box-shadow:0 0 13px #ffb44b33}
+body.handheld.landscape.session-active .loadout{grid-column:1/-1;grid-row:3;min-width:0;min-height:0;margin:0;align-self:stretch}
+body.handheld.landscape.session-active .loadout .section-heading{display:none}
+body.handheld.landscape.session-active .item-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;height:100%;direction:ltr}
+body.handheld.landscape.session-active .item,
+body.handheld.landscape.session-active .item:last-child{grid-column:auto;grid-template-columns:24px minmax(0,1fr);align-items:center;gap:6px;min-height:0;height:100%;padding:5px 19px 5px 7px;border:1px solid #414b55;border-radius:5px;background:#1a232c;overflow:hidden;position:relative}
+body.handheld.landscape.session-active .item::after{content:attr(data-count);position:absolute;right:5px;top:5px;min-width:12px;text-align:center;font:10px/1.2 var(--mono);font-weight:700;color:var(--item-color);direction:ltr}
+body.handheld.landscape.session-active .item-icon{width:24px;height:30px}
+body.handheld.landscape.session-active .item-icon svg{width:23px;height:29px}
+body.handheld.landscape.session-active .item-info,
+body.handheld.landscape.session-active .item:last-child .item-info{display:block;min-width:0}
+body.handheld.landscape.session-active .item-name{font-size:clamp(8px,1.2vw,11px);line-height:1.25;margin:0;overflow-wrap:normal}
+body.handheld.landscape.session-active .item-effect,
+body.handheld.landscape.session-active .item-count,
+body.handheld.landscape.session-active .item-key{display:none}
+body.handheld.landscape.session-active .item:disabled{opacity:.4}
+body.handheld.landscape.session-active .hud{padding:7px 8px}
+body.handheld.landscape.session-active .player-hud{width:45%;max-width:230px}
+body.handheld.landscape.session-active .hp-label{font-size:8px}
+body.handheld.landscape.session-active .hp-label span{font-size:7px}
+body.handheld.landscape.session-active .health-track{height:8px;margin:4px 0}
+body.handheld.landscape.session-active .rage-label{font-size:6px;margin-top:3px}
+body.handheld.landscape.session-active .rage-track{height:4px;margin:3px 0 4px}
+body.handheld.landscape.session-active .run-hud{font-size:7px;gap:3px}
+body.handheld.landscape.session-active .run-hud strong{font-size:17px}
+body.handheld.landscape.session-active .buffs{gap:2px}
+body.handheld.landscape.session-active .buff-tag{font-size:6px;padding:2px 3px}
+body.handheld.landscape.session-active .combo{font-size:21px;top:27%}
+body.handheld.landscape.session-active .combo small{font-size:8px}
+body.handheld.landscape.session-active .level-toast{font-size:clamp(12px,2.1vw,19px)}
+body.handheld.landscape.session-active .dialog{padding:10px;overflow:auto}
+body.handheld.landscape.session-active .dialog-card{max-width:360px;margin:auto}
+body.handheld.landscape.session-active .dialog-card .eyebrow{font-size:7px}
+body.handheld.landscape.session-active .dialog-card h2{font-size:clamp(17px,4.4vh,25px);margin:6px 0}
+body.handheld.landscape.session-active .dialog-card p{font-size:9px;line-height:1.4;margin:0 0 9px}
+body.handheld.landscape.session-active .dialog-card .primary{min-height:34px;min-width:0;max-width:100%;padding:0 14px;font-size:9px;gap:16px}
+body.handheld.landscape.session-active .dialog-card .primary span{font-size:18px}
+body.handheld.landscape.session-active .dialog-card .secondary{font-size:8px;margin-top:8px;padding:6px 10px}
+html[dir="rtl"] body.handheld.landscape.session-active .hud,
+html[dir="rtl"] body.handheld.landscape.session-active .dialog,
+html[dir="rtl"] body.handheld.landscape.session-active .item-info{direction:rtl}
+html[dir="rtl"] body.handheld.landscape.session-active .item-name{font-size:11px}
+html[dir="rtl"] body.handheld.landscape.session-active .buff-tag{font-size:7px}
+/* The phone menu remains scrollable; its start button fits the first landscape view. */
+body.handheld.landscape:not(.session-active) .app-shell{width:calc(100% - 24px)}
+body.handheld.landscape:not(.session-active) .topbar{padding:8px 0;gap:10px;flex-wrap:nowrap}
+body.handheld.landscape:not(.session-active) .brand{font-size:19px;gap:8px}
+body.handheld.landscape:not(.session-active) .brand-mark{width:31px;height:31px;font-size:25px}
+body.handheld.landscape:not(.session-active) .brand small,
+body.handheld.landscape:not(.session-active) .edition{display:none}
+body.handheld.landscape:not(.session-active) .utilities{width:auto;gap:5px}
+body.handheld.landscape:not(.session-active) main{padding-top:9px}
+body.handheld.landscape:not(.session-active) .section-top{font-size:8px;margin-bottom:7px}
+body.handheld.landscape:not(.session-active) .game-top{font-size:7px;padding:5px 10px;min-height:26px}
+body.handheld.landscape:not(.session-active) .game-bottom{display:none}
+body.handheld.landscape:not(.session-active) .screen{width:min(100%,calc((100dvh - 112px) * 16 / 9));height:auto;aspect-ratio:16/9;margin-inline:auto}
+body.handheld.landscape:not(.session-active) .menu-copy{width:67%;padding:12px 5% 36px}
+body.handheld.landscape:not(.session-active) .menu-copy .eyebrow{font-size:6px;letter-spacing:.5px}
+body.handheld.landscape:not(.session-active) .menu-copy h1{font-size:clamp(26px,8vh,35px);line-height:1.03;margin:7px 0}
+body.handheld.landscape:not(.session-active) .menu-copy p{font-size:9px;line-height:1.4;margin-bottom:8px}
+body.handheld.landscape:not(.session-active) .menu-copy .primary{min-height:33px;font-size:8px;max-width:100%;gap:12px;padding:0 12px}
+body.handheld.landscape:not(.session-active) .start-hint{font-size:6px;line-height:1.4;margin-top:7px;display:block}
+body.handheld.landscape:not(.session-active) .menu-foot{padding:8px 5%;font-size:6px}
+body.handheld.landscape:not(.session-active) .menu-foot>span:last-child{display:none}
+body.handheld.landscape:not(.session-active) .touch-controls{display:none}
+.rotate-prompt{display:none;position:fixed;inset:0;z-index:100;background:radial-gradient(ellipse at 50% 30%,#26313b,#0b1016 65%);padding:max(24px,env(safe-area-inset-top,0px)) max(22px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(22px,env(safe-area-inset-left,0px));overflow:auto;overscroll-behavior:none}
+body.rotate-required{overflow:hidden;touch-action:none}
+body.rotate-required .rotate-prompt:not([hidden]){display:grid;place-items:center}
+.rotate-card{max-width:350px;text-align:center;margin:auto}
+.rotate-kicker{font:12px var(--mono);letter-spacing:5px;color:#a7b1b1}
+.rotate-icon{display:block;width:120px;height:100px;margin:30px auto 21px;fill:none;stroke:var(--orange);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.rotate-icon .rotate-dot{stroke-width:3}
+.rotate-card h2{font:25px/1.2 var(--display);color:var(--ink);margin:0 0 15px}
+.rotate-card p{font-size:13px;line-height:1.8;color:#aebbbd;margin:0 auto 23px}
+.rotate-card .secondary{font:10px var(--mono);margin:0;border:1px solid #52606a;border-radius:5px;min-height:44px;padding:10px 18px;color:var(--lime)}
+@media(max-height:345px) and (orientation:landscape){
+ body.handheld.landscape.session-active{--deck-top:33px;--deck-bottom:51px;--deck-side:120px}
+ body.handheld.landscape.session-active .dpad{grid-template-rows:repeat(2,40px);margin-bottom:6px}
+ body.handheld.landscape.session-active .dpad button{height:40px;min-height:40px}
+ body.handheld.landscape.session-active .touch-actions{grid-template-rows:repeat(3,39px);margin-bottom:6px;gap:4px}
+ body.handheld.landscape.session-active .touch-actions button{height:39px;min-height:39px;font-size:8px}
+ body.handheld.landscape.session-active .hud{padding:5px 6px}
+ body.handheld.landscape.session-active .buff-tag{font-size:5px}
+ body.handheld.landscape.session-active .dialog-card h2{font-size:16px}
+ body.handheld.landscape.session-active .dialog-card p{font-size:8px}
+ body.handheld.landscape.session-active .dialog-card .primary{min-height:30px}
+ body.handheld.landscape:not(.session-active) .menu-copy p{display:none}
+ body.handheld.landscape:not(.session-active) .menu-copy h1{font-size:27px}
+}

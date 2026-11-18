@@ -2,6 +2,7 @@ export const LOCALES = ['ru', 'en', 'he'];
 export const COPY = {
  ru: {
   pageTitle:'NATHAN — Уличный разнос',description:'Пиксельный экшен с Натаном. Город, лес и завод. Удары, броски, ярость и аркадные усиления.',
+  startMobile:'НАЧАТЬ ИГРУ',startHintMobile:'ДВИЖЕНИЕ СЛЕВА · УДАРЫ СПРАВА · ПРЕДМЕТЫ ВНИЗУ',mobileHint:'На телефоне играй горизонтально. Все кнопки — на экране.',fullscreenExit:'Выйти из полноэкранного режима',rotateTitle:'ПОВЕРНИ ТЕЛЕФОН',rotateText:'Игра на паузе. Поверни телефон горизонтально, затем нажми «Продолжить».',rotateMenu:'ВЕРНУТЬСЯ В МЕНЮ',
   brandSubtitle:'УЛИЧНЫЙ РАЗНОС',brandAria:'NATHAN — главное меню',edition:'ПИКСЕЛЬНЫЙ ЭКШЕН',volume:'ВЫП. 01',language:'Язык игры',
   sound:'ЗВУК',soundOn:'ВКЛ',soundOff:'ВЫКЛ',soundEnable:'Включить звук',soundDisable:'Выключить звук',fullscreen:'На весь экран',fullscreenError:'Полноэкранный режим недоступен в этом браузере.',
   arcade:'АРКАДНЫЙ РЕЖИМ',arena:'Игровая арена',player:'ИГРОК 01',record:'РЕКОРД',pause:'Пауза',menu:'В МЕНЮ',
@@ -27,6 +28,7 @@ export const COPY = {
  },
  en: {
   pageTitle:'NATHAN — Street Rampage',description:'Pixel action starring Nathan. City, forest and factory. Punches, throws, rage and arcade power-ups.',
+  startMobile:'START GAME',startHintMobile:'MOVE ON THE LEFT · FIGHT ON THE RIGHT · ITEMS BELOW',mobileHint:'Play in landscape on your phone. All controls are on screen.',fullscreenExit:'Exit full screen',rotateTitle:'TURN YOUR PHONE',rotateText:'The game is paused. Turn your phone sideways, then tap Resume.',rotateMenu:'BACK TO MENU',
   brandSubtitle:'STREET RAMPAGE',brandAria:'NATHAN — main menu',edition:'PIXEL BEAT ’EM UP',volume:'VOL. 01',language:'Game language',
   sound:'SOUND',soundOn:'ON',soundOff:'OFF',soundEnable:'Turn sound on',soundDisable:'Turn sound off',fullscreen:'Full screen',fullscreenError:'Full-screen mode is unavailable in this browser.',
   arcade:'ARCADE MODE',arena:'Game arena',player:'PLAYER 01',record:'BEST',pause:'Pause',menu:'MAIN MENU',
@@ -52,6 +54,7 @@ export const COPY = {
  },
  he: {
   pageTitle:'NATHAN — בלגן ברחובות',description:'משחק אקשן בפיקסלים עם נתן. עיר, יער ומפעל. אגרופים, הטלות, זעם ושדרוגי ארקייד.',
+  startMobile:'מתחילים לשחק',startHintMobile:'תנועה משמאל · מכות מימין · חפצים למטה',mobileHint:'בטלפון משחקים לרוחב. כל הפקדים נמצאים על המסך.',fullscreenExit:'יציאה ממסך מלא',rotateTitle:'מסובבים את הטלפון',rotateText:'המשחק מושהה. סובבו את הטלפון לרוחב ואז לחצו על המשך.',rotateMenu:'חזרה לתפריט',
   brandSubtitle:'בלגן ברחובות',brandAria:'NATHAN — תפריט ראשי',edition:'אקשן בפיקסלים',volume:'פרק 01',language:'שפת המשחק',
   sound:'צליל',soundOn:'פעיל',soundOff:'כבוי',soundEnable:'הפעלת צליל',soundDisable:'כיבוי צליל',fullscreen:'מסך מלא',fullscreenError:'מצב מסך מלא אינו זמין בדפדפן הזה.',
   arcade:'מצב ארקייד',arena:'זירת המשחק',player:'שחקן 01',record:'שיא',pause:'השהיה',menu:'לתפריט הראשי',

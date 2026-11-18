@@ -6,7 +6,9 @@ const $ = id => document.getElementById(id);
 const canvas = $('game'), input = {}, assets = {};
 const stageButtons = [...document.querySelectorAll('[data-level]')];
 const touchButtons = [...document.querySelectorAll('[data-control]')];
+const keyboardHeld = new Set(), pointerHeld = new Map();
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let handheld = false, landscape = innerWidth > innerHeight, layoutFrame = 0;
 let state = null, selectedLevel = 0, locale = 'ru', renderer, last = 0, lastHud = 0;
 let ready = false, loadFailed = false, chosenStage = false, soundEnabled = false, audioContext, masterGain, record = 0, activeDialog = '', toastTimer = 0, toastKind = '', currentFps = 60;
 try {
@@ -31,9 +33,37 @@ $('items').innerHTML = ITEMS.map((item, i) => `<button class="item" style="--ite
 const itemButtons = [...document.querySelectorAll('[data-item]')];
 
 function clearInput() {
+ for (const [id, action] of pointerHeld) {
+  const button = document.querySelector(`[data-control="${action}"]`);
+  if (typeof id === 'number' && button?.hasPointerCapture(id)) button.releasePointerCapture(id);
+ }
+ keyboardHeld.clear(); pointerHeld.clear();
  for (const key in input) delete input[key];
  if (state) clearInputBuffer(state);
  document.querySelectorAll('.pressed').forEach(el => el.classList.remove('pressed'));
+}
+function syncAction(action) {
+ input[action] = [...keyboardHeld].some(code => keyMap[code] === action) || [...pointerHeld.values()].some(value => value === action);
+ document.querySelector(`[data-control="${action}"]`)?.classList.toggle('pressed', input[action]);
+}
+function updateLayout() {
+ const wasLandscape = landscape;
+ landscape = innerWidth > innerHeight;
+ handheld = matchMedia('(any-pointer: coarse)').matches || (Math.min(innerWidth, innerHeight) <= 600 && Math.max(innerWidth, innerHeight) <= 1024);
+ const rotate = handheld && !landscape && !!state;
+ document.body.classList.toggle('handheld', handheld);
+ document.body.classList.toggle('landscape', landscape);
+ document.body.classList.toggle('session-active', !!state);
+ document.body.classList.toggle('rotate-required', rotate);
+ document.querySelector('.app-shell').inert = rotate;
+ const prompt = $('rotate-prompt');
+ if (prompt) prompt.hidden = !rotate;
+ if (wasLandscape !== landscape) clearInput();
+ if (ready && !state) updateStart();
+ if (rotate && state?.mode === 'playing') { state.mode = 'paused'; showDialog('paused', false); $('rotate-menu')?.focus({ preventScroll:true }); }
+}
+function scheduleLayout() {
+ cancelAnimationFrame(layoutFrame); layoutFrame = requestAnimationFrame(updateLayout);
 }
 function announce(text) { $('announcement').textContent = text; }
 function updateRecord() { $('record').innerHTML = `${t('record')} <b dir="ltr">${String(record).padStart(6, '0')}</b>`; }
@@ -96,8 +126,8 @@ function setLocation() {
  });
 }
 function updateStart() {
- $('start').innerHTML = (ready ? chosenStage ? t('startLevel', { level:copy().levels[selectedLevel].name }) : t('start') : t('loading')) + arrow();
- $('load-status').textContent = bidi(t(loadFailed ? 'loadFailed' : ready ? 'startHint' : 'prepare'));
+ $('start').innerHTML = (ready ? chosenStage ? t('startLevel', { level:copy().levels[selectedLevel].name }) : t(handheld ? 'startMobile' : 'start') : t('loading')) + arrow();
+ $('load-status').textContent = bidi(t(loadFailed ? 'loadFailed' : ready ? handheld ? 'startHintMobile' : 'startHint' : 'prepare'));
 }
 function updateItems() {
  itemButtons.forEach((button, i) => {
@@ -105,11 +135,13 @@ function updateItems() {
   button.querySelector('.item-name').textContent = bidi(item.name);
   button.querySelector('.item-effect').textContent = bidi(item.effect);
   button.querySelector('.item-count').textContent = bidi(state ? t('inPocket', { count:state.inventory[i] }) : t(i === 4 ? 'instant' : 'oneTwenty'));
+  button.dataset.count = state ? state.inventory[i] : '';
   button.title = item.description; button.setAttribute('aria-label', t('itemAria', { ...item, key:ITEMS[i].key }));
   button.disabled = !state || state.mode !== 'playing' || state.inventory[i] <= 0;
  });
 }
 function updateTouch() {
+ document.body.classList.toggle('session-playing', state?.mode === 'playing');
  touchButtons.forEach(button => {
   const action = button.dataset.control;
   button.disabled = state?.mode !== 'playing' || (action === 'special' && state.rage < 100);
@@ -130,7 +162,7 @@ function applyLocale(next) {
  document.querySelectorAll('[data-i18n-alt]').forEach(el => el.alt = t(el.dataset.i18nAlt));
  document.querySelectorAll('[data-locale]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.locale === locale)));
  clearInput(); if (state) setLocale(state, locale);
- updateRecord(); updateSoundLabel(); setLocation(); updateStart(); updateItems(); updateTouch(); updateMeta();
+ updateRecord(); updateSoundLabel(); setLocation(); updateStart(); updateItems(); updateTouch(); updateMeta(); updateFullscreenLabel();
  if (state) { updateHud(); if (activeDialog) showDialog(activeDialog, false); if (toastTimer > 0) renderToast(); }
  else $('arena-status').textContent = t('arenaMenu');
 }
@@ -141,11 +173,11 @@ function startGame() {
  if (!ready) return;
  saveRecord(); state = createGame(selectedLevel, locale); state.reducedMotion = reduced; clearInput(); ensureAudio();
  $('screen').classList.add('in-game'); $('menu').hidden = true; $('dialog').hidden = true; $('hud').hidden = false; $('pause').disabled = false; activeDialog = '';
- setLocation(); showToast(); canvas.focus({ preventScroll:true }); updateHud();
+ setLocation(); showToast(); canvas.focus({ preventScroll:true }); updateHud(); updateLayout();
 }
 function menu() {
  saveRecord(); clearInput(); state = null; $('screen').classList.remove('in-game'); $('menu').hidden = false; $('dialog').hidden = true; $('hud').hidden = true; $('pause').disabled = true; activeDialog = '';
- setLocation(); updateStart(); updateItems(); updateTouch(); syncAudioGain(); $('arena-status').textContent = t('arenaMenu'); $('start').focus({ preventScroll:true });
+ updateLayout(); setLocation(); updateStart(); updateItems(); updateTouch(); syncAudioGain(); $('arena-status').textContent = t('arenaMenu'); $('start').focus({ preventScroll:true });
 }
 function showDialog(mode, focus = true) {
  if (!state) return;
@@ -158,7 +190,7 @@ function showDialog(mode, focus = true) {
  if (mode !== 'paused') saveRecord(); syncAudioGain();
 }
 function pause() { if (state?.mode === 'playing') { state.mode = 'paused'; showDialog('paused'); } else if (state?.mode === 'paused') resume(); }
-function resume() { if (state?.mode !== 'paused') return; clearInput(); state.mode = 'playing'; activeDialog = ''; $('dialog').hidden = true; syncAudioGain(); updateTouch(); updateItems(); canvas.focus({ preventScroll:true }); }
+function resume() { if (state?.mode !== 'paused' || document.body.classList.contains('rotate-required')) return; clearInput(); state.mode = 'playing'; activeDialog = ''; $('dialog').hidden = true; syncAudioGain(); updateTouch(); updateItems(); canvas.focus({ preventScroll:true }); }
 function activateItem(i) { if (state?.mode !== 'playing') return; useItem(state, i); updateHud(); canvas.focus({ preventScroll:true }); }
 function updateHud() {
  if (!state) return;
@@ -186,10 +218,33 @@ stageButtons.forEach(button => button.addEventListener('click', () => { if (!sta
 itemButtons.forEach((button, i) => button.addEventListener('click', () => activateItem(i)));
 document.querySelectorAll('[data-locale]').forEach(button => button.addEventListener('click', () => applyLocale(button.dataset.locale)));
 $('sound').addEventListener('click', () => { soundEnabled = !soundEnabled; try { localStorage.setItem('nathan-sound', soundEnabled ? '1' : '0'); } catch {} updateSoundLabel(); syncAudioGain(); if (soundEnabled) beep('pickup'); });
-$('fullscreen').addEventListener('click', async () => { try { if (document.fullscreenElement) await document.exitFullscreen(); else { const target = matchMedia('(pointer:coarse)').matches ? document.documentElement : document.querySelector('.cabinet'); await target.requestFullscreen(); } } catch { announce(t('fullscreenError')); } });
+$('fullscreen').addEventListener('click', async () => {
+ try {
+  if (document.fullscreenElement) { await document.exitFullscreen(); return; }
+  const target = handheld ? document.documentElement : document.querySelector('.cabinet');
+  if (!target.requestFullscreen) { announce(t('fullscreenError')); return; }
+  await target.requestFullscreen();
+  if (handheld && window.screen.orientation?.lock) {
+   try { await window.screen.orientation.lock('landscape'); } catch { /* Rotation remains available when orientation lock is unsupported. */ }
+  }
+ } catch { announce(t('fullscreenError')); }
+});
+document.addEventListener('fullscreenchange', () => {
+ if (!document.fullscreenElement) {
+  clearInput(); if (state?.mode === 'playing') pause();
+  try { window.screen.orientation?.unlock?.(); } catch {}
+ }
+ updateFullscreenLabel(); scheduleLayout();
+});
+function updateFullscreenLabel() { $('fullscreen').setAttribute('aria-label', t(document.fullscreenElement ? 'fullscreenExit' : 'fullscreen')); }
+$('rotate-menu')?.addEventListener('click', menu);
+window.addEventListener('resize', scheduleLayout);
+window.visualViewport?.addEventListener('resize', scheduleLayout);
+matchMedia('(orientation: landscape)').addEventListener('change', scheduleLayout);
 
 const keyMap = { KeyW:'up', ArrowUp:'up', KeyS:'down', ArrowDown:'down', KeyA:'left', ArrowLeft:'left', KeyD:'right', ArrowRight:'right', KeyJ:'punch', KeyK:'kick', KeyE:'throw', KeyL:'throw', KeyQ:'special', KeyC:'crouch', Space:'dodge' };
 window.addEventListener('keydown', event => {
+ if (document.body.classList.contains('rotate-required')) return;
  if (event.code === 'Tab' && activeDialog) {
   const controls = [$('dialog-primary'), $('dialog-secondary')], index = controls.indexOf(document.activeElement);
   event.preventDefault(); controls[(index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length].focus(); return;
@@ -197,17 +252,33 @@ window.addEventListener('keydown', event => {
  if (event.code === 'Escape' || event.code === 'KeyP') { if (state) { event.preventDefault(); if (!event.repeat) pause(); } return; }
  if (!state) { if (event.code === 'Enter' && document.activeElement === canvas) startGame(); return; }
  if (state.mode !== 'playing') return;
- if (keyMap[event.code]) { event.preventDefault(); input[keyMap[event.code]] = true; }
+ if (keyMap[event.code]) { event.preventDefault(); keyboardHeld.add(event.code); syncAction(keyMap[event.code]); }
  const item = /^Digit([1-5])$/.exec(event.code); if (item && !event.repeat) { event.preventDefault(); activateItem(Number(item[1]) - 1); }
 });
-window.addEventListener('keyup', event => { if (keyMap[event.code]) { delete input[keyMap[event.code]]; if (state) event.preventDefault(); } });
+window.addEventListener('keyup', event => { if (keyMap[event.code]) { keyboardHeld.delete(event.code); syncAction(keyMap[event.code]); if (state) event.preventDefault(); } });
 window.addEventListener('blur', () => { clearInput(); if (state?.mode === 'playing') pause(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden) { clearInput(); if (state?.mode === 'playing') pause(); } });
+function releasePointer(event) {
+ const action = pointerHeld.get(event.pointerId);
+ if (!action) return;
+ pointerHeld.delete(event.pointerId); syncAction(action);
+}
+window.addEventListener('pointerup', releasePointer);
+window.addEventListener('pointercancel', releasePointer);
 for (const button of touchButtons) {
- const release = () => { delete input[button.dataset.control]; button.classList.remove('pressed'); };
- button.addEventListener('pointerdown', event => { event.preventDefault(); if (button.disabled || state?.mode !== 'playing') return; button.setPointerCapture(event.pointerId); input[button.dataset.control] = true; button.classList.add('pressed'); });
- button.addEventListener('pointerup', release); button.addEventListener('pointercancel', release); button.addEventListener('lostpointercapture', release);
- button.addEventListener('click', event => { if (event.detail === 0 && !button.disabled && state?.mode === 'playing') { input[button.dataset.control] = true; setTimeout(release, 100); } });
+ button.addEventListener('pointerdown', event => {
+  event.preventDefault(); if (button.disabled || state?.mode !== 'playing') return;
+  button.setPointerCapture(event.pointerId); pointerHeld.set(event.pointerId, button.dataset.control); syncAction(button.dataset.control);
+ });
+ button.addEventListener('lostpointercapture', releasePointer);
+ button.addEventListener('contextmenu', event => event.preventDefault());
+ button.addEventListener('click', event => {
+  if (event.detail === 0 && !button.disabled && state?.mode === 'playing') {
+   const token = Symbol('accessible-action'), action = button.dataset.control;
+   pointerHeld.set(token, action); syncAction(action);
+   setTimeout(() => { pointerHeld.delete(token); syncAction(action); }, 100);
+  }
+ });
 }
 canvas.addEventListener('pointerdown', () => canvas.focus({ preventScroll:true }));
 function loadImage(src) { return new Promise((resolve, reject) => { const image = new Image(); image.onload = () => resolve(image); image.onerror = () => reject(new Error(src)); image.src = src; }); }
@@ -239,4 +310,5 @@ function frame(now) {
  requestAnimationFrame(frame);
 }
 applyLocale(locale);
+updateLayout();
 boot();
