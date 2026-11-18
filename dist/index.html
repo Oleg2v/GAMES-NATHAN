@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru" dir="ltr" translate="no" class="notranslate">
+<head><meta name="google" content="notranslate"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#11151b"><title>NATHAN — Уличный разнос</title><meta name="description" content="Пиксельный экшен с Натаном. Город, лес и завод. Удары, броски и ярость."><link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css"></head>
+<body>
+<div class="app-shell">
+<header class="topbar">
+ <a class="brand" href="./" data-i18n-aria="brandAria" aria-label="NATHAN — главное меню"><span class="brand-mark">N</span><span><bdi>NATHAN</bdi><small data-i18n="brandSubtitle">УЛИЧНЫЙ РАЗНОС</small></span></a>
+ <div class="edition"><i></i><span data-i18n="edition">ПИКСЕЛЬНЫЙ ЭКШЕН</span><span data-i18n="volume">ВЫП. 01</span></div>
+ <div class="utilities">
+  <div class="language-switch" role="group" data-i18n-aria="language" aria-label="Язык игры" dir="ltr"><button data-locale="ru" lang="ru" aria-pressed="true">RU</button><button data-locale="en" lang="en" aria-pressed="false">EN</button><button data-locale="he" lang="he" aria-pressed="false">עברית</button></div>
+  <button id="sound" class="utility" aria-label="Включить звук" aria-pressed="false"><span data-i18n="sound">ЗВУК</span><b id="sound-value">ВЫКЛ</b></button>
+  <button id="fullscreen" class="utility square" data-i18n-aria="fullscreen" aria-label="На весь экран">⛶</button>
+ </div>
+</header>
+<main>
+<div class="section-top"><span><span class="live-dot"></span><span data-i18n="arcade">АРКАДНЫЙ РЕЖИМ</span></span><span id="top-location">01 — ГОРОД</span></div>
+<section class="cabinet" data-i18n-aria="arena" aria-label="Игровая арена">
+ <div class="game-top"><span><span data-i18n="player">ИГРОК 01</span><b>NATHAN</b></span><span id="record"></span><button id="pause" data-i18n-aria="pause" aria-label="Пауза" disabled>Ⅱ</button></div>
+ <div class="screen" id="screen">
+  <canvas id="game" width="960" height="540" tabindex="0" dir="ltr" data-i18n-aria="gameAria" aria-label="Игра Натан"></canvas>
+  <div id="hud" class="hud" hidden>
+   <div class="player-hud">
+    <div class="hp-label"><b>NATHAN</b><span id="hp-text" dir="ltr">120 / 120</span></div>
+    <div id="health-meter" class="health-track" role="progressbar" aria-valuemin="0" aria-valuemax="120" aria-valuenow="120" data-i18n-aria="health" aria-label="Здоровье Натана"><div id="hp-bar"></div></div>
+    <div class="rage-label"><span id="rage-label" data-i18n="rage">ЯРОСТЬ</span><b id="rage-text" dir="ltr">0 / 100</b></div>
+    <div id="rage-meter" class="rage-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-aria="rage" aria-label="Ярость"><div id="rage-bar"></div></div>
+    <div class="buffs" id="buffs"></div>
+   </div>
+   <div class="run-hud"><span id="wave"></span><strong id="score" dir="ltr" data-i18n-aria="score" aria-label="Счёт">000000</strong><span id="enemies"></span></div>
+   <div id="combo" class="combo" hidden></div><div id="level-toast" class="level-toast"></div>
+  </div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div id="menu" class="menu-overlay">
+   <div class="menu-art"><img src="./assets/nathan-concept.png" data-i18n-alt="portraitAlt" alt="Пиксельный Натан"></div>
+   <div class="menu-copy"><div class="eyebrow" data-i18n="heroMetrics">195 СМ · 140 КГ · ОДИН НАТАН</div><h1 data-i18n-html="heroTitle">НИ ШАГУ<br><em>НАЗАД.</em></h1><p data-i18n-html="heroIntro">Три района. Сотни проблем.<br>Разговор будет коротким.</p><button class="primary" id="start" disabled>ЗАГРУЗКА… <span aria-hidden="true">→</span></button><span class="start-hint" id="load-status">Готовим арену</span></div>
+   <div class="menu-foot"><span><bdi>01 / 03</bdi><b data-i18n="routeLine">ГОРОД → ЛЕС → ЗАВОД</b></span><span data-i18n="tagline">ЖМИ. БЕЙ. ПОВТОРЯЙ.</span></div>
+  </div>
+  <div id="dialog" class="dialog" hidden role="dialog" aria-modal="true" aria-labelledby="dialog-title" aria-describedby="dialog-text"><div class="dialog-card"><span class="eyebrow" id="dialog-kicker"></span><h2 id="dialog-title"></h2><p id="dialog-text"></p><button id="dialog-primary" class="primary"></button><button id="dialog-secondary" class="secondary" data-i18n="menu">В МЕНЮ</button></div></div>
+ </div>
+ <div class="game-bottom"><span id="arena-status"></span><span class="cabinet-meta"></span></div>
+</section>
+<div class="touch-controls" dir="ltr" data-i18n-aria="touch" aria-label="Сенсорное управление">
+ <div class="dpad"><button data-control="up" data-i18n-aria="up" aria-label="Вверх" disabled>↑</button><button data-control="left" data-i18n-aria="left" aria-label="Влево" disabled>←</button><button data-control="down" data-i18n-aria="down" aria-label="Вниз" disabled>↓</button><button data-control="right" data-i18n-aria="right" aria-label="Вправо" disabled>→</button></div>
+ <div class="touch-actions"><button data-control="dodge" disabled><span data-i18n="dodge">РЫВОК</span><b>SPACE</b></button><button data-control="punch" disabled><span data-i18n="punch">РУКА</span><b>J</b></button><button data-control="kick" disabled><span data-i18n="kick">НОГА</span><b>K</b></button><button data-control="throw" disabled><span data-i18n="throw">БРОСОК</span><b>E / L</b></button><button data-control="crouch" disabled><span data-i18n="crouch">ПРИСЕСТЬ</span><b>C</b></button><button data-control="special" class="special-button" disabled><span data-i18n="special">ЯРОСТЬ</span><b>Q</b></button></div>
+</div>
+<section class="loadout" aria-labelledby="loadout-title"><div class="section-heading"><h2 id="loadout-title" data-i18n="loadoutTitle">КАРМАНЫ НАТАНА</h2><span id="item-help" data-i18n="itemHelp">КЛАВИШИ 1–5 · УСИЛЕНИЯ НА 120 СЕК.</span></div><div class="item-grid" id="items"></div></section>
+<section class="route" aria-labelledby="route-title"><div class="section-heading"><h2 id="route-title" data-i18n="routeTitle">ТРИ МЕСТА. ОДИН ПЛАН.</h2><span data-i18n="routeHelp">ВЫБОР СТАРТОВОГО УРОВНЯ</span></div><div class="stage-grid" id="stages">
+ <button class="stage active" data-level="0"><div class="stage-scene city" aria-hidden="true"><i></i><i></i><i></i><i></i><span>24/7</span></div><div class="stage-label"><span>01</span><div><b></b><small></small></div><span class="stage-arrow" aria-hidden="true">↗</span></div></button>
+ <button class="stage" data-level="1"><div class="stage-scene forest" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="stage-label"><span>02</span><div><b></b><small></small></div><span class="stage-arrow" aria-hidden="true">↗</span></div></button>
+ <button class="stage" data-level="2"><div class="stage-scene factory" aria-hidden="true"><i></i><i></i><i></i><i></i><span data-i18n="shift">СМЕНА 03</span></div><div class="stage-label"><span>03</span><div><b></b><small></small></div><span class="stage-arrow" aria-hidden="true">↗</span></div></button>
+</div></section>
+<footer>
+ <details class="help-panel"><summary data-i18n="controls">КАК ИГРАТЬ</summary><div class="key-guide">
+  <span><kbd>W A S D</kbd> / <kbd>↑ ← ↓ →</kbd><span data-i18n="movement">движение</span></span>
+  <span><kbd>J</kbd><span data-i18n="punch">РУКА</span></span><span><kbd>K</kbd><span data-i18n="kick">НОГА</span></span><span><kbd>E / L</kbd><span data-i18n="throw">БРОСОК</span></span><span><kbd>Q</kbd><span data-i18n="special">ЯРОСТЬ</span></span><span><kbd>C</kbd><span data-i18n="crouch">ПРИСЕСТЬ</span></span><span><kbd>SPACE</kbd><span data-i18n="dodge">РЫВОК</span></span><span><kbd>1–5</kbd><span data-i18n="itemsControl">предметы</span></span><span><kbd>ESC / P</kbd><span data-i18n="pauseControl">пауза</span></span>
+ </div><div class="help-copy"><p data-i18n="controlIntro"></p><p data-i18n="controlCombos"></p><p data-i18n="controlThrow"></p><p data-i18n="controlCrouch"></p><p data-i18n="controlSpecial"></p></div></details>
+ <div class="footer-meta"><span dir="ltr">GAMES—NATHAN <b>© 2026</b></span><span data-i18n="fiction">Все эффекты предметов вымышлены и существуют только в игре.</span></div>
+</footer>
+</main></div><div id="announcement" class="sr-only" role="status" aria-live="polite"></div><script type="module" src="./app.js"></script>
+</body></html>

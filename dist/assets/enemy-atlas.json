@@ -1,0 +1,56 @@
+{
+  "width": 1536,
+  "height": 1024,
+  "characterHeight": 476,
+  "sourceFacing": "right",
+  "frames": {
+    "punkIdle": {
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "anchorX": 249,
+      "anchorY": 498
+    },
+    "runnerIdle": {
+      "x": 512,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "anchorX": 236,
+      "anchorY": 498
+    },
+    "bossIdle": {
+      "x": 1024,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "anchorX": 236,
+      "anchorY": 498
+    },
+    "punkAttack": {
+      "x": 0,
+      "y": 512,
+      "w": 512,
+      "h": 512,
+      "anchorX": 225,
+      "anchorY": 494
+    },
+    "runnerAttack": {
+      "x": 512,
+      "y": 512,
+      "w": 512,
+      "h": 512,
+      "anchorX": 210,
+      "anchorY": 494
+    },
+    "bossAttack": {
+      "x": 1024,
+      "y": 512,
+      "w": 512,
+      "h": 512,
+      "anchorX": 222,
+      "anchorY": 494
+    }
+  }
+}

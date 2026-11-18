@@ -1,0 +1,55 @@
+{
+  "width": 1536,
+  "height": 1024,
+  "characterHeight": 472,
+  "frames": {
+    "idle": {
+      "x": 0,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "anchorX": 256,
+      "anchorY": 498
+    },
+    "walk1": {
+      "x": 512,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "anchorX": 240,
+      "anchorY": 500
+    },
+    "walk2": {
+      "x": 1024,
+      "y": 0,
+      "w": 512,
+      "h": 512,
+      "anchorX": 225,
+      "anchorY": 498
+    },
+    "punch": {
+      "x": 0,
+      "y": 512,
+      "w": 512,
+      "h": 512,
+      "anchorX": 230,
+      "anchorY": 493
+    },
+    "kick": {
+      "x": 512,
+      "y": 512,
+      "w": 512,
+      "h": 512,
+      "anchorX": 180,
+      "anchorY": 492
+    },
+    "hurt": {
+      "x": 1024,
+      "y": 512,
+      "w": 512,
+      "h": 512,
+      "anchorX": 250,
+      "anchorY": 493
+    }
+  }
+}

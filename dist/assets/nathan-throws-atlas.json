@@ -1,0 +1,26 @@
+{
+  "width": 1536,
+  "height": 1024,
+  "columns": 2,
+  "rows": 1,
+  "characterHeight": 850,
+  "sourceFacing": "right",
+  "frames": {
+    "grab": {
+      "x": 0,
+      "y": 0,
+      "w": 730,
+      "h": 1024,
+      "anchorX": 340,
+      "anchorY": 920
+    },
+    "throw": {
+      "x": 730,
+      "y": 0,
+      "w": 806,
+      "h": 1024,
+      "anchorX": 385,
+      "anchorY": 920
+    }
+  }
+}
