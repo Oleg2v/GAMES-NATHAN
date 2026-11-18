@@ -437,8 +437,8 @@ function updateStep(state, dt, input) {
   }
   else if (input.kick) attack(state, 'kick');
   else if (input.punch) attack(state, 'punch');
-  let moveX = Number(Boolean(input.right)) - Number(Boolean(input.left));
-  let moveY = Number(Boolean(input.down)) - Number(Boolean(input.up));
+  let moveX = Number.isFinite(input.moveX) ? clamp(input.moveX, -1, 1) : Number(Boolean(input.right)) - Number(Boolean(input.left));
+  let moveY = Number.isFinite(input.moveY) ? clamp(input.moveY, -1, 1) : Number(Boolean(input.down)) - Number(Boolean(input.up));
   if (moveX && p.attack !== 'throw') p.face = Math.sign(moveX);
   if (p.dodgeTimer > 0 && !moveX && !moveY) moveX = p.face;
   const movement = Math.max(1, Math.hypot(moveX, moveY));

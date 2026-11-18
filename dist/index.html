@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ru" dir="ltr" translate="no" class="notranslate">
-<head><meta name="google" content="notranslate"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#11151b"><title>NATHAN — Уличный разнос</title><meta name="description" content="Пиксельный экшен с Натаном. Город, лес и завод. Удары, броски и ярость."><link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="NATHAN"><meta name="mobile-web-app-capable" content="yes"><link rel="stylesheet" href="./style.css"></head>
+<head><meta name="google" content="notranslate"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#11151b"><title>NATHAN — Уличный разнос</title><meta name="description" content="Пиксельный экшен с Натаном. Город, лес и завод. Удары, броски и ярость."><link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="manifest" href="./manifest.json"><link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="NATHAN"><meta name="mobile-web-app-capable" content="yes"><link rel="stylesheet" href="./style.css"></head>
 <body>
 <div class="app-shell">
 <header class="topbar">
@@ -9,7 +9,7 @@
  <div class="utilities">
   <div class="language-switch" role="group" data-i18n-aria="language" aria-label="Язык игры" dir="ltr"><button data-locale="ru" lang="ru" aria-pressed="true">RU</button><button data-locale="en" lang="en" aria-pressed="false">EN</button><button data-locale="he" lang="he" aria-pressed="false">עברית</button></div>
   <button id="sound" class="utility" aria-label="Включить звук" aria-pressed="false"><span data-i18n="sound">ЗВУК</span><b id="sound-value">ВЫКЛ</b></button>
-  <button id="fullscreen" class="utility square" data-i18n-aria="fullscreen" aria-label="На весь экран">⛶</button>
+  <button id="fullscreen" class="utility square" data-i18n-aria="fullscreen" aria-label="На весь экран"><span id="fullscreen-symbol" aria-hidden="true">⛶</span><span id="install-label" data-i18n="install" hidden>УСТАНОВИТЬ</span></button>
  </div>
 </header>
 <main>
@@ -31,7 +31,7 @@
   </div>
   <div class="scanlines" aria-hidden="true"></div>
   <div id="menu" class="menu-overlay">
-   <div class="menu-art"><img src="./assets/nathan-concept.png" data-i18n-alt="portraitAlt" alt="Пиксельный Натан"></div>
+   <div class="menu-art"><img draggable="false" src="./assets/nathan-concept.png" data-i18n-alt="portraitAlt" alt="Пиксельный Натан"></div>
    <div class="menu-copy"><div class="eyebrow" data-i18n="heroMetrics">195 СМ · 140 КГ · ОДИН НАТАН</div><h1 data-i18n-html="heroTitle">НИ ШАГУ<br><em>НАЗАД.</em></h1><p data-i18n-html="heroIntro">Три района. Сотни проблем.<br>Разговор будет коротким.</p><button class="primary" id="start" disabled>ЗАГРУЗКА… <span aria-hidden="true">→</span></button><span class="start-hint" id="load-status">Готовим арену</span></div>
    <div class="menu-foot"><span><bdi>01 / 03</bdi><b data-i18n="routeLine">ГОРОД → ЛЕС → ЗАВОД</b></span><span data-i18n="tagline">ЖМИ. БЕЙ. ПОВТОРЯЙ.</span></div>
   </div>
@@ -43,11 +43,8 @@
 <div class="touch-controls" dir="ltr" data-i18n-aria="touch" aria-label="Сенсорное управление">
  <div class="touch-cluster touch-move">
   <button class="pad-shoulder shoulder-left" data-control="crouch" disabled><b aria-hidden="true">L1</b><span data-i18n="crouch">ПРИСЕСТЬ</span></button>
-  <div id="dpad" class="dpad" role="group" data-i18n-aria="movement" aria-label="Движение">
-   <button data-control="up" data-i18n-aria="up" aria-label="Вверх" disabled>↑</button>
-   <button data-control="left" data-i18n-aria="left" aria-label="Влево" disabled>←</button>
-   <button data-control="right" data-i18n-aria="right" aria-label="Вправо" disabled>→</button>
-   <button data-control="down" data-i18n-aria="down" aria-label="Вниз" disabled>↓</button>
+  <div id="joystick-zone" class="joystick-zone" role="group" data-i18n-aria="joystick" aria-label="Джойстик движения">
+   <div id="joystick-base" class="joystick-base" aria-hidden="true" hidden><div class="joystick-ring"></div><div id="joystick-stick" class="joystick-stick"></div></div>
   </div>
  </div>
  <div class="touch-cluster touch-combat">
@@ -60,6 +57,7 @@
   </div>
  </div>
 </div>
+<button id="bag-toggle" class="bag-toggle" aria-expanded="false" aria-controls="items" data-i18n-aria="bag" aria-label="КАРМАНЫ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V4h8v3M4 8h16v13H4zM4 12h16M10 11v4h4v-4"/></svg><span data-i18n="bag">КАРМАНЫ</span></button>
 <section class="loadout" aria-labelledby="loadout-title"><div class="section-heading"><h2 id="loadout-title" data-i18n="loadoutTitle">КАРМАНЫ НАТАНА</h2><span id="item-help" data-i18n="itemHelp">КЛАВИШИ 1–5 · УСИЛЕНИЯ НА 120 СЕК.</span></div><div class="item-grid" id="items"></div></section>
 <section class="route" aria-labelledby="route-title"><div class="section-heading"><h2 id="route-title" data-i18n="routeTitle">ТРИ МЕСТА. ОДИН ПЛАН.</h2><span data-i18n="routeHelp">ВЫБОР СТАРТОВОГО УРОВНЯ</span></div><div class="stage-grid" id="stages">
  <button class="stage active" data-level="0"><div class="stage-scene city" aria-hidden="true"><i></i><i></i><i></i><i></i><span>24/7</span></div><div class="stage-label"><span>01</span><div><b></b><small></small></div><span class="stage-arrow" aria-hidden="true">↗</span></div></button>
@@ -75,7 +73,13 @@
 </footer>
 </main></div>
 <div id="rotate-prompt" class="rotate-prompt" hidden role="dialog" aria-modal="true" aria-labelledby="rotate-title" aria-describedby="rotate-text">
- <div class="rotate-card"><span class="rotate-kicker">NATHAN</span><svg class="rotate-icon" viewBox="0 0 120 100" aria-hidden="true"><rect x="36" y="17" width="48" height="72" rx="7" transform="rotate(-90 60 53)"/><path d="M24 35A39 39 0 0 1 89 20M89 20v-14M89 20H75"/><path class="rotate-dot" d="M86 48v10"/></svg><h2 id="rotate-title" data-i18n="rotateTitle">ПОВЕРНИ ТЕЛЕФОН</h2><p id="rotate-text" data-i18n="rotateText">Игра на паузе. Поверни телефон горизонтально, затем нажми «Продолжить».</p><button id="rotate-menu" class="secondary" data-i18n="rotateMenu">ВЕРНУТЬСЯ В МЕНЮ</button></div>
+ <div class="rotate-scene">
+  <div class="rotate-art" aria-hidden="true"><img src="./assets/nathan-concept.png" alt="" draggable="false"></div>
+  <div class="rotate-copy"><div class="rotate-brand"><span class="brand-mark">N</span><b>NATHAN</b></div><div class="rotate-message"><span class="eyebrow" data-i18n="heroMetrics">195 СМ · 140 КГ · ОДИН НАТАН</span><h2 id="rotate-title" data-i18n="rotateTitle">ПОВЕРНИ ТЕЛЕФОН</h2><p id="rotate-text" data-i18n="rotateText"></p><button id="rotate-menu" class="primary" data-i18n="rotateMenu">ВЕРНУТЬСЯ В МЕНЮ</button></div></div>
+ </div>
+</div>
+<div id="resume-countdown" class="resume-countdown" hidden role="dialog" aria-modal="true" aria-labelledby="countdown-label">
+ <div class="countdown-content"><span id="countdown-label" data-i18n="countdownLabel">ПРИГОТОВЬСЯ</span><strong id="countdown-number" role="status" aria-live="assertive" aria-atomic="true">3</strong><button id="countdown-cancel" class="secondary" data-i18n="countdownCancel">ОСТАТЬСЯ НА ПАУЗЕ</button></div>
 </div>
 <div id="announcement" class="sr-only" role="status" aria-live="polite"></div><script type="module" src="./app.js"></script>
 </body></html>

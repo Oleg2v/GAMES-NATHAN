@@ -1,9 +1,10 @@
 export const LOCALES = ['ru', 'en', 'he'];
 export const COPY = {
  ru: {
+  bag:'СУМКА',closeBag:'ЗАКРЫТЬ СУМКУ',install:'Поделиться → На экран Домой',joystick:'Джойстик движения',countdownLabel:'ПРИГОТОВЬСЯ',countdownCancel:'ОСТАТЬСЯ НА ПАУЗЕ',
   pageTitle:'NATHAN — Уличный разнос',description:'Пиксельный экшен с Натаном. Город, лес и завод. Удары, броски, ярость и аркадные усиления.',
-  startMobile:'НАЧАТЬ ИГРУ',startHintMobile:'СЛЕВА — КРЕСТОВИНА · СПРАВА — △ ○ × □',mobileHint:'Веди палец по крестовине слева. Боевые кнопки — справа.',fullscreenExit:'Выйти из полноэкранного режима',rotateTitle:'ПОВЕРНИ ТЕЛЕФОН',rotateText:'Игра на паузе. Поверни телефон горизонтально, затем нажми «Продолжить».',rotateMenu:'ВЕРНУТЬСЯ В МЕНЮ',
-  combatControls:'Боевые кнопки',mobileControlsHelp:'Веди палец по крестовине слева, не отрывая его: можно двигаться и по диагонали. В центре — остановка. Справа: △ — бросок, ○ — нога, × — рывок, □ — рука. L1 — присесть, R1 — ярость. Предметы — снизу по центру.',
+  startMobile:'НАЧАТЬ ИГРУ',startHintMobile:'ДЖОЙСТИК СЛЕВА · БОЕВЫЕ КНОПКИ СПРАВА',mobileHint:'Коснись левой половины экрана и веди палец для движения.',fullscreenExit:'Выйти из полноэкранного режима',rotateTitle:'ПОВЕРНИ ТЕЛЕФОН',rotateText:'Натан ждёт. Поверни телефон горизонтально — продолжим после отсчёта 3–2–1.',rotateMenu:'ВЕРНУТЬСЯ В МЕНЮ',
+  combatControls:'Боевые кнопки',mobileControlsHelp:'Коснись свободного места слева: джойстик появится под пальцем. Веди палец в нужную сторону, отпусти для остановки. Справа: △ — бросок, ○ — нога, × — рывок, □ — рука. L1 — присесть, R1 — ярость. Предметы открываются кнопкой «Сумка».',
   standaloneHint:'На iPhone для игры без панелей браузера: «Поделиться» → «На экран Домой». Открой игру с домашнего экрана.',
   brandSubtitle:'УЛИЧНЫЙ РАЗНОС',brandAria:'NATHAN — главное меню',edition:'ПИКСЕЛЬНЫЙ ЭКШЕН',volume:'ВЫП. 01',language:'Язык игры',
   sound:'ЗВУК',soundOn:'ВКЛ',soundOff:'ВЫКЛ',soundEnable:'Включить звук',soundDisable:'Выключить звук',fullscreen:'На весь экран',fullscreenError:'Полноэкранный режим недоступен в этом браузере.',
@@ -29,9 +30,10 @@ export const COPY = {
   items:[{name:'Виванс 20',description:'+20 к силе · 120 сек',effect:'СИЛА +20'},{name:'Виванс 30',description:'+30 к силе · 120 сек',effect:'СИЛА +30'},{name:'Шмаль',description:'Слоу-мо и удары ×1,25 · 120 сек',effect:'СЛОУ-МО · УДАР ×1,25'},{name:'Оземпик',description:'Стройнее и скорость ×1,7 · 120 сек',effect:'СКОРОСТЬ ×1,7'},{name:'Шаурма',description:'+45 здоровья',effect:'ЗДОРОВЬЕ +45'}]
  },
  en: {
+  bag:'BAG',closeBag:'CLOSE BAG',install:'Share → Add to Home Screen',joystick:'Movement joystick',countdownLabel:'GET READY',countdownCancel:'STAY PAUSED',
   pageTitle:'NATHAN — Street Rampage',description:'Pixel action starring Nathan. City, forest and factory. Punches, throws, rage and arcade power-ups.',
-  startMobile:'START GAME',startHintMobile:'D-PAD ON THE LEFT · △ ○ × □ ON THE RIGHT',mobileHint:'Slide your thumb on the left D-pad. Fight with the buttons on the right.',fullscreenExit:'Exit full screen',rotateTitle:'TURN YOUR PHONE',rotateText:'The game is paused. Turn your phone sideways, then tap Resume.',rotateMenu:'BACK TO MENU',
-  combatControls:'Combat buttons',mobileControlsHelp:'Slide your thumb across the left D-pad without lifting it; diagonals work too. The center stops movement. On the right: △ throw, ○ kick, × dash, □ punch. L1 crouches and R1 activates rage. Items sit at the bottom center.',
+  startMobile:'START GAME',startHintMobile:'JOYSTICK ON THE LEFT · FIGHT BUTTONS ON THE RIGHT',mobileHint:'Touch the left half of the screen and slide your thumb to move.',fullscreenExit:'Exit full screen',rotateTitle:'TURN YOUR PHONE',rotateText:'Nathan is waiting. Turn your phone sideways — play resumes after a 3–2–1 countdown.',rotateMenu:'BACK TO MENU',
+  combatControls:'Combat buttons',mobileControlsHelp:'Touch an empty spot on the left: a joystick appears beneath your thumb. Slide in any direction and release to stop. On the right: △ throw, ○ kick, × dash, □ punch. L1 crouches and R1 activates rage. Open your items with Bag.',
   standaloneHint:'On iPhone, play without browser bars: Share → Add to Home Screen. Open the game from your Home Screen.',
   brandSubtitle:'STREET RAMPAGE',brandAria:'NATHAN — main menu',edition:'PIXEL BEAT ’EM UP',volume:'VOL. 01',language:'Game language',
   sound:'SOUND',soundOn:'ON',soundOff:'OFF',soundEnable:'Turn sound on',soundDisable:'Turn sound off',fullscreen:'Full screen',fullscreenError:'Full-screen mode is unavailable in this browser.',
@@ -57,9 +59,10 @@ export const COPY = {
   items:[{name:'Vyvanse 20',description:'+20 power · 120 sec',effect:'POWER +20'},{name:'Vyvanse 30',description:'+30 power · 120 sec',effect:'POWER +30'},{name:'Weed',description:'Slow motion and hits ×1.25 · 120 sec',effect:'SLOW-MO · HIT ×1.25'},{name:'Ozempic',description:'Slimmer and speed ×1.7 · 120 sec',effect:'SPEED ×1.7'},{name:'Shawarma',description:'+45 health',effect:'HEALTH +45'}]
  },
  he: {
+  bag:'תיק',closeBag:'סגירת התיק',install:'שיתוף ← הוספה למסך הבית',joystick:'ג׳ויסטיק תנועה',countdownLabel:'מתכוננים',countdownCancel:'להישאר בהשהיה',
   pageTitle:'NATHAN — בלגן ברחובות',description:'משחק אקשן בפיקסלים עם נתן. עיר, יער ומפעל. אגרופים, הטלות, זעם ושדרוגי ארקייד.',
-  startMobile:'מתחילים לשחק',startHintMobile:'חצי תנועה משמאל · △ ○ × □ מימין',mobileHint:'מחליקים את האגודל על חצי התנועה משמאל. נלחמים בכפתורים מימין.',fullscreenExit:'יציאה ממסך מלא',rotateTitle:'מסובבים את הטלפון',rotateText:'המשחק מושהה. סובבו את הטלפון לרוחב ואז לחצו על המשך.',rotateMenu:'חזרה לתפריט',
-  combatControls:'כפתורי קרב',mobileControlsHelp:'מחליקים את האגודל על חצי התנועה משמאל בלי להרים אותו; אפשר לנוע גם באלכסון. במרכז עוצרים. מימין: △ הטלה, ○ בעיטה, × זינוק, □ אגרוף. L1 לכריעה ו־R1 לזעם. החפצים נמצאים למטה במרכז.',
+  startMobile:'מתחילים לשחק',startHintMobile:'ג׳ויסטיק משמאל · כפתורי קרב מימין',mobileHint:'נוגעים בחצי השמאלי של המסך ומחליקים את האגודל כדי לנוע.',fullscreenExit:'יציאה ממסך מלא',rotateTitle:'מסובבים את הטלפון',rotateText:'נתן מחכה. סובבו את הטלפון לרוחב — המשחק יימשך אחרי ספירה של 3–2–1.',rotateMenu:'חזרה לתפריט',
+  combatControls:'כפתורי קרב',mobileControlsHelp:'נוגעים במקום פנוי משמאל: ג׳ויסטיק מופיע מתחת לאגודל. מחליקים לכל כיוון ומשחררים כדי לעצור. מימין: △ הטלה, ○ בעיטה, × זינוק, □ אגרוף. L1 לכריעה ו־R1 לזעם. פותחים חפצים בכפתור התיק.',
   standaloneHint:'באייפון, כדי לשחק בלי סרגלי הדפדפן: שיתוף ← הוספה למסך הבית. פתחו את המשחק ממסך הבית.',
   brandSubtitle:'בלגן ברחובות',brandAria:'NATHAN — תפריט ראשי',edition:'אקשן בפיקסלים',volume:'פרק 01',language:'שפת המשחק',
   sound:'צליל',soundOn:'פעיל',soundOff:'כבוי',soundEnable:'הפעלת צליל',soundDisable:'כיבוי צליל',fullscreen:'מסך מלא',fullscreenError:'מצב מסך מלא אינו זמין בדפדפן הזה.',

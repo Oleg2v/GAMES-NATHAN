@@ -24,3 +24,22 @@ export function getDpadDirections(clientX, clientY, rect) {
   if (Math.abs(x) >= Math.abs(y) * 0.42) directions.push(x < 0 ? 'left' : 'right');
   return directions;
 }
+
+/**
+ * Convert a floating joystick's CSS-pixel displacement into an eight-way unit
+ * direction and an independent speed magnitude. Multiply x/y by magnitude when
+ * applying movement. The neutral zone is inclusive; long drags stay capped.
+ */
+export function getJoystickVector(deltaX, deltaY, options = {}) {
+  const deadZone = options?.deadZone ?? 10;
+  const maxRadius = options?.maxRadius ?? 52;
+  const neutral = { x: 0, y: 0, magnitude: 0 };
+  if (![deltaX, deltaY, deadZone, maxRadius].every(Number.isFinite) || deadZone < 0 || maxRadius <= deadZone) return neutral;
+  const distance = Math.hypot(deltaX, deltaY);
+  if (!Number.isFinite(distance) || distance <= deadZone) return neutral;
+  const octant = (Math.round(Math.atan2(deltaY, deltaX) / (Math.PI / 4)) + 8) % 8;
+  const diagonal = Math.SQRT1_2;
+  const directions = [[1, 0], [diagonal, diagonal], [0, 1], [-diagonal, diagonal], [-1, 0], [-diagonal, -diagonal], [0, -1], [diagonal, -diagonal]];
+  const [x, y] = directions[octant];
+  return { x, y, magnitude: Math.min(1, (distance - deadZone) / (maxRadius - deadZone)) };
+}

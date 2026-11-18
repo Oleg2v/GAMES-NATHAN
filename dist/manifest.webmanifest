@@ -1,13 +1,13 @@
 {
-  "id": "./",
+  "id": "/",
   "name": "NATHAN — Street Brawler",
   "short_name": "NATHAN",
-  "description": "Пиксельный экшен с Натаном: город, лес и завод.",
+  "description": "Пиксельный экшен с Натаном: город, лес и завод. Игра работает без сети после первой полной загрузки.",
   "lang": "ru",
   "dir": "auto",
-  "start_url": "./",
-  "scope": "./",
-  "display": "fullscreen",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
   "display_override": ["fullscreen", "standalone"],
   "orientation": "landscape",
   "background_color": "#11151b",
@@ -15,16 +15,22 @@
   "categories": ["games", "entertainment"],
   "icons": [
     {
-      "src": "./assets/icons/icon-192.png",
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./assets/icons/icon-512.png",
+      "src": "/assets/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
