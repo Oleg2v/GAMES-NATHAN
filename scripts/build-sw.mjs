@@ -18,7 +18,10 @@ const ASSETS = new Map(RELEASE.assets.map(asset => [asset.url, asset]));
 const absolute = pathname => new URL(pathname, ORIGIN).href;
 
 async function verifiedFetch(asset) {
-  const request = new Request(absolute(asset.url), {
+  // Static hosts may canonicalize /index.html with a redirect to /.
+  // Fetch the canonical entry point while retaining /index.html as the cache key.
+  const fetchPath = asset.url === '/index.html' ? '/' : asset.url;
+  const request = new Request(absolute(fetchPath), {
     cache: 'reload', credentials: 'same-origin', redirect: 'error',
   });
   const response = await fetch(request);

@@ -53,9 +53,15 @@ function workerHarness(generated, initialFiles, options = {}) {
     const url = new URL(typeof request === 'string' ? request : request.url, ORIGIN);
     fetches.push(url.pathname);
     if (!online) throw new TypeError('Offline');
-    const body = files.get(url.pathname);
+    if ((options.canonicalIndexRedirect && url.pathname === '/index.html') ||
+        options.redirectAssets?.includes(url.pathname)) {
+      if (request.redirect === 'error') throw new TypeError('Unexpected redirect');
+      return new Response(null, { status: 308, headers: { Location: '/' } });
+    }
+    const assetPath = url.pathname === '/' ? '/index.html' : url.pathname;
+    const body = files.get(assetPath);
     if (!body) return new Response('Not found', { status: 404 });
-    const extension = path.extname(url.pathname);
+    const extension = path.extname(assetPath);
     const mime = options.htmlWorker && url.pathname === '/sw.js' ? 'text/html' :
       extension === '.js' ? 'application/javascript' : extension === '.html' ? 'text/html' :
       extension === '.json' ? 'application/json' : extension === '.woff2' ? 'font/woff2' : 'image/png';
@@ -154,6 +160,24 @@ test('successful install precaches the entire release and reports readiness with
   assert.equal(worker.lifecycle.claimed, 0); assert.equal(worker.lifecycle.skipped, 0);
   await worker.activate();
   assert.equal(worker.lifecycle.claimed, 1); assert.equal(worker.lifecycle.skipped, 0);
+});
+
+test('canonical root fetch avoids static-host index.html redirects and keeps the offline index key', async t => {
+  const f = await fixture(t), worker = workerHarness(f.generated, f.files, { canonicalIndexRedirect: true });
+  await worker.install(); await worker.activate();
+  assert(worker.fetches.includes('/'), 'entry point is fetched from the canonical root');
+  assert(!worker.fetches.includes('/index.html'), 'redirecting index path is never requested during precache');
+  const cache = await worker.caches.open(CACHE_PREFIX + f.generated.version);
+  assert.equal(await (await cache.match('/index.html')).text(), f.files.get('/index.html').toString());
+  worker.offline();
+  assert.equal(await (await worker.fetch('/', { mode: 'navigate' })).text(), f.files.get('/index.html').toString());
+  assert.equal(await (await worker.fetch('/index.html')).text(), f.files.get('/index.html').toString());
+});
+
+test('redirects for other assets remain rejected and cannot create a mixed release', async t => {
+  const f = await fixture(t), worker = workerHarness(f.generated, f.files, { redirectAssets: ['/app.js'] });
+  await assert.rejects(worker.install(), /Unexpected redirect/);
+  assert.equal((await worker.caches.keys()).length, 0);
 });
 
 test('failed or mismatched install deletes its partial cache and leaves the old release intact', async t => {
