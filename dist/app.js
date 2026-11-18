@@ -54,6 +54,25 @@ function syncMovement() {
  input.moveX = keyX || keyY ? keyX : joystick.x * joystick.magnitude;
  input.moveY = keyX || keyY ? keyY : joystick.y * joystick.magnitude;
 }
+function updateCameraFraming() {
+ if (!renderer) return;
+ const enabled = handheld && landscape && !!state;
+ if (!enabled) { renderer.resize(960, 540); renderer.setMobileFraming({ enabled:false }); return; }
+ // The scene fills the actual visible screen. Controls overlay it; they do not
+ // subtract side rails or reduce the size of the characters.
+ const bounds = canvas.getBoundingClientRect();
+ renderer.resize(bounds.width, bounds.height);
+ const occlusions = [];
+ const selectors = '[data-control],#bag-toggle,#sound,#pause,#fullscreen,.player-hud,.run-hud,#joystick-home';
+ for (const element of document.querySelectorAll(selectors)) {
+  const rect = element.getBoundingClientRect();
+  if (!rect.width || !rect.height || element.hidden) continue;
+  const style = getComputedStyle(element);
+  if (style.display === 'none' || (style.visibility === 'hidden' && element.id !== 'joystick-home')) continue;
+  occlusions.push({ left:rect.left - bounds.left, top:rect.top - bounds.top, right:rect.right - bounds.left, bottom:rect.bottom - bounds.top });
+ }
+ renderer.setMobileFraming({ enabled, occlusions, viewportWidth:bounds.width, viewportHeight:bounds.height });
+}
 function updateLayout() {
  const wasLandscape = landscape;
  const viewport = readViewport(window.visualViewport, innerWidth, innerHeight);
@@ -69,13 +88,13 @@ function updateLayout() {
  const prompt = $('rotate-prompt');
  if (prompt) prompt.hidden = !rotate;
  if (wasLandscape !== landscape) clearInput();
- if (renderer) renderer.resize(960, 540);
  if (ready && !state) updateStart();
  if (rotate) {
   if (state?.mode === 'playing') { rotationResumePending = true; state.mode = 'paused'; showDialog('paused', false); }
   resumeCountdown.cancel();
  } else if (rotationResumePending && state?.mode === 'paused' && performance.now() >= rotationSettlingUntil) resumeCountdown.start();
  updateFullscreenLabel();
+ updateCameraFraming();
 }
 function scheduleLayout() {
  cancelAnimationFrame(layoutFrame); layoutFrame = requestAnimationFrame(updateLayout);
@@ -199,6 +218,7 @@ function applyLocale(next) {
  updateRecord(); updateSoundLabel(); setLocation(); updateStart(); updateItems(); updateTouch(); updateMeta(); updateFullscreenLabel();
  if (state) { updateHud(); if (activeDialog) showDialog(activeDialog, false); if (toastTimer > 0) renderToast(); }
  else $('arena-status').textContent = t('arenaMenu');
+ if (renderer) scheduleLayout();
 }
 function renderToast() { $('level-toast').textContent = toastKind === 'wave' ? t('wave', { wave:state.wave }) : `0${state.level + 1} / ${copy().levels[state.level].name}`; }
 function showToast(kind = 'level') { toastKind = kind; toastTimer = 2; renderToast(); announce($('level-toast').textContent); }
@@ -306,6 +326,12 @@ window.addEventListener('orientationchange', () => {
  scheduleLayout();
 });
 matchMedia('(orientation: landscape)').addEventListener('change', scheduleLayout);
+// Buff labels, translated text, and loaded fonts can change the HUD footprint
+// without changing the viewport. Re-measure only on actual element-size changes.
+if ('ResizeObserver' in window) {
+ const framingObserver = new ResizeObserver(scheduleLayout);
+ for (const element of document.querySelectorAll('canvas,.player-hud,.run-hud,#sound,#fullscreen,#bag-toggle,#combat-controls,#crouch-control,#rage-control,#joystick-home')) framingObserver.observe(element);
+}
 
 const keyMap = { KeyW:'up', ArrowUp:'up', KeyS:'down', ArrowDown:'down', KeyA:'left', ArrowLeft:'left', KeyD:'right', ArrowRight:'right', KeyJ:'punch', KeyK:'kick', KeyE:'throw', KeyL:'throw', KeyQ:'special', KeyC:'crouch', Space:'dodge' };
 window.addEventListener('keydown', event => {

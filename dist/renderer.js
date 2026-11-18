@@ -1,3 +1,5 @@
+import { logicalFraming, updateCamera, edgeIndicators } from './camera.js';
+
 const BASE_W = 960, H = 540, WORLD_W = 2400;
 const FRAME_NAMES = ['idle', 'walk1', 'walk2', 'punch', 'kick', 'hurt'];
 const SIGNS = {
@@ -20,8 +22,21 @@ export function createRenderer(canvas, assets = {}) {
   c.imageSmoothingEnabled = false;
   let menuTime = 0, lastHP = 120, shake = 0, lastKills = 0, lastSpecial = 0, lastActionTime = 0;
   let currentLocale = 'ru';
+  let mobileInput={enabled:false},mobileFraming=logicalFraming(mobileInput,W,H),mobileView=null,framingKey='';
+  let worldBottom=H;
   const enemyMotion = new WeakMap();
   const reduceMotion = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  function refreshFraming(){
+    const next=logicalFraming(mobileInput,W,H);
+    const key=JSON.stringify([next.enabled,W,H,next.occlusions.map(r=>Object.values(r).map(v=>Math.round(v*10)/10))]);
+    if(key!==framingKey){mobileView=null;framingKey=key;}
+    mobileFraming=next;
+  }
+  function setMobileFraming(input={enabled:false}){
+    mobileInput={...input,occlusions:(input.occlusions||[]).map(r=>({...r}))};
+    refreshFraming();
+    return {width:W,height:H,enabled:mobileFraming.enabled,occlusions:mobileFraming.occlusions.map(r=>({...r}))};
+  }
   function resize(width = BASE_W, height = H) {
     const nextWidth = Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0
       ? Math.max(1, Math.round(H * width / height)) : BASE_W;
@@ -32,6 +47,7 @@ export function createRenderer(canvas, assets = {}) {
     }
     // Changing the backing store resets canvas context settings.
     c.imageSmoothingEnabled = false;
+    refreshFraming();
     return { width: W, height: H };
   }
   const rect = (x,y,w,h,color) => { c.fillStyle = color; c.fillRect(Math.round(x),Math.round(y),Math.ceil(w),Math.ceil(h)); };
@@ -60,17 +76,17 @@ export function createRenderer(canvas, assets = {}) {
   function city(cam,t) {
     const gradient=c.createLinearGradient(0,0,0,330); gradient.addColorStop(0,'#101b31'); gradient.addColorStop(1,'#4a424b'); c.fillStyle=gradient;c.fillRect(0,0,W,330);
     rect(790-cam*.07,43,35,35,'#bebca5'); rect(784-cam*.07,51,48,20,'#bebca5');
-    for(let i=-2;i<Math.ceil((W+cam*.13)/105)+2;i++) {
+    for(let i=Math.floor(cam*.13/105)-2;i<Math.ceil((W+cam*.13)/105)+2;i++) {
       const x=i*105-cam*.13, h=95+hash(i+18)*120;
       building(x,300-h,81+hash(i+8)*25,h,i*2+3,'#1b293a');
       if(i%3===0){rect(x+22,300-h-29,4,29,'#1d2b3b');rect(x+20,300-h-32,8,4,'#af5a5b');}
     }
-    for(let i=-2;i<Math.ceil((W+cam*.35)/178)+2;i++){
+    for(let i=Math.floor(cam*.35/178)-2;i<Math.ceil((W+cam*.35)/178)+2;i++){
       const x=i*178-cam*.35, h=120+hash(i+27)*90;
       building(x,320-h,159,h,i+90,'#25313b');
     }
     // Shopfronts sit behind the brawling lane.
-    for(let i=-1;i<Math.ceil((W+cam)/340)+2;i++){
+    for(let i=Math.floor(cam/340)-1;i<Math.ceil((W+cam)/340)+2;i++){
       const x=i*340-cam;
       if(x>W+350||x<-360)continue;
       rect(x,184,332,149,'#34353b');rect(x,184,332,8,'#505052');
@@ -96,7 +112,7 @@ export function createRenderer(canvas, assets = {}) {
     }
     rect(0,327,W,12,'#6b6463');rect(0,339,W,6,'#151f2c');
     ground(0,cam,t);
-    for(let i=-1;i<Math.ceil((W+cam)/470)+2;i++){
+    for(let i=Math.floor(cam/470)-1;i<Math.ceil((W+cam)/470)+2;i++){
       const x=i*470+270-cam;
       rect(x,177,7,165,'#101d28');rect(x-9,176,26,7,'#101d28');rect(x-16,173,42,7,'#9b8469');rect(x-12,178,34,4,'#f9c16f');
       poly([[x-12,184],[x+22,184],[x+87,340],[x-75,340]],'rgba(237,177,98,.055)');
@@ -120,10 +136,10 @@ export function createRenderer(canvas, assets = {}) {
   function forest(cam,t) {
     const gradient=c.createLinearGradient(0,0,0,350);gradient.addColorStop(0,'#162d31');gradient.addColorStop(.6,'#49655b');gradient.addColorStop(1,'#72806a');c.fillStyle=gradient;c.fillRect(0,0,W,350);
     rect(720-cam*.06,44,58,58,'#c2cba1');rect(712-cam*.06,58,74,29,'#c2cba1');
-    for(let i=-2;i<Math.ceil((W+cam*.15)/79)+2;i++)pine(i*79-cam*.15,335,.85+hash(i+5)*.55,'#304c45',i);
+    for(let i=Math.floor(cam*.15/79)-2;i<Math.ceil((W+cam*.15)/79)+2;i++)pine(i*79-cam*.15,335,.85+hash(i+5)*.55,'#304c45',i);
     rect(0,262,W,18,'rgba(147,165,131,.1)');rect(0,291,W,28,'rgba(157,171,137,.1)');
-    for(let i=-2;i<Math.ceil((W+cam*.43)/125)+2;i++)pine(i*125+15-cam*.43,338,1.12+hash(i+8)*.3,'#203b36',i);
-    for(let i=-1;i<Math.ceil((W+cam)/270)+2;i++){
+    for(let i=Math.floor(cam*.43/125)-2;i<Math.ceil((W+cam*.43)/125)+2;i++)pine(i*125+15-cam*.43,338,1.12+hash(i+8)*.3,'#203b36',i);
+    for(let i=Math.floor(cam/270)-1;i<Math.ceil((W+cam)/270)+2;i++){
       const x=i*270+35-cam;
       rect(x-12,5,26,327,'#283b31');rect(x-9,6,7,316,'#3c4c36');rect(x+5,5,5,326,'#192f2b');
       rect(x-8,90,8,17,'#152d29');rect(x+3,192,7,37,'#152d29');
@@ -135,7 +151,7 @@ export function createRenderer(canvas, assets = {}) {
     poly([[120-cam*.2,0],[180-cam*.2,0],[440-cam*.2,340],[350-cam*.2,340]],'rgba(213,218,157,.055)');
     poly([[680-cam*.1,0],[710-cam*.1,0],[890-cam*.1,340],[830-cam*.1,340]],'rgba(213,218,157,.04)');
     ground(1,cam,t);
-    for(let i=-1;i<Math.ceil((W+cam)/315)+2;i++){
+    for(let i=Math.floor(cam/315)-1;i<Math.ceil((W+cam)/315)+2;i++){
       const x=i*315+130-cam;
       rect(x,312,85,21,'#433c2f');rect(x+2,309,79,7,'#5c5038');rect(x+8,319,65,3,'#302d28');rect(x+68,311,16,20,'#b3935f');rect(x+71,315,10,12,'#665333');
       for(let a=0;a<7;a++){rect(x-30+a*19,328-hash(a+i*8)*13,3,12,'#61704b');rect(x-27+a*19,329-hash(a+i*8)*13,6,3,'#61704b');}
@@ -149,7 +165,7 @@ export function createRenderer(canvas, assets = {}) {
   }
   function factory(cam,t) {
     const gradient=c.createLinearGradient(0,0,0,350);gradient.addColorStop(0,'#241e2b');gradient.addColorStop(1,'#895744');c.fillStyle=gradient;c.fillRect(0,0,W,350);
-    for(let i=-1;i<Math.ceil((W+cam*.18)/178)+2;i++){
+    for(let i=Math.floor(cam*.18/178)-1;i<Math.ceil((W+cam*.18)/178)+2;i++){
       const x=i*178-cam*.18;
       rect(x,138,139,195,'#332c34');rect(x+20,46,24,138,'#3f3439');rect(x+17,46,30,8,'#69504a');
       rect(x+88,92,16,93,'#40353a');
@@ -158,7 +174,7 @@ export function createRenderer(canvas, assets = {}) {
         c.globalAlpha=.1;rect(xx-12,yy,26+j*8,14,'#b19a86');rect(xx-4,yy-6,28+j*7,19,'#b19a86');c.globalAlpha=1;
       }
     }
-    for(let i=-1;i<Math.ceil((W+cam)/310)+2;i++){
+    for(let i=Math.floor(cam/310)-1;i<Math.ceil((W+cam)/310)+2;i++){
       const x=i*310-cam;
       rect(x,105,304,229,'#43383b');rect(x+9,112,286,215,'#493d3e');
       for(let j=0;j<3;j++){
@@ -186,7 +202,7 @@ export function createRenderer(canvas, assets = {}) {
       for(let j=0;j<15;j++)poly([[x+j*21,321],[x+j*21+11,321],[x+j*21+2,333],[x+j*21-9,333]],'#343036');
     }
     ground(2,cam,t);
-    for(let i=-1;i<Math.ceil((W+cam)/360)+2;i++){
+    for(let i=Math.floor(cam/360)-1;i<Math.ceil((W+cam)/360)+2;i++){
       const x=i*360+150-cam;
       rect(x,300,45,35,'#3a5151');rect(x-2,297,49,7,'#4f6962');rect(x+3,310,38,5,'#728270');rect(x+3,326,38,4,'#1f393d');
       rect(x+54,311,37,24,'#655041');rect(x+58,316,29,3,'#907357');rect(x+58,329,29,3,'#3f3934');
@@ -198,22 +214,22 @@ export function createRenderer(canvas, assets = {}) {
     }
   }
   function ground(level,cam,t){
-    const p=palettes[level];rect(0,345,W,H-345,p.floor);
-    const gradient=c.createLinearGradient(0,345,0,H);gradient.addColorStop(0,'rgba(0,0,0,.1)');gradient.addColorStop(1,'rgba(0,0,0,.25)');c.fillStyle=gradient;c.fillRect(0,345,W,195);
+    const p=palettes[level];rect(0,345,W,worldBottom-345,p.floor);
+    const gradient=c.createLinearGradient(0,345,0,worldBottom);gradient.addColorStop(0,'rgba(0,0,0,.1)');gradient.addColorStop(1,'rgba(0,0,0,.25)');c.fillStyle=gradient;c.fillRect(0,345,W,worldBottom-345);
     for(let i=0;i<120;i++){
-      const x=(hash(i+108)*2700-cam)%W, y=351+hash(i+56)*182;
+      const x=((hash(i+108)*2700-cam)%W+W)%W, y=351+hash(i+56)*(worldBottom-355);
       rect(x,y,2+hash(i)*15,1+Math.floor(hash(i+11)*2),p.line);
     }
     if(level===0){
-      for(let i=-1;i<Math.ceil((W+cam)/380)+2;i++){const x=i*380+20-cam;rect(x,428,110,4,'#736b59');rect(x+4,432,106,2,'#3c3d3e');rect(x+72,375,77,3,'#4b5357');rect(x+82,380,57,2,'#666262');rect(x+91,386,44,2,'#44575c');}
-      rect(0,520,W,4,'#48454a');rect(0,524,W,16,'#1b222b');
+      for(let i=Math.floor(cam/380)-1;i<Math.ceil((W+cam)/380)+2;i++){const x=i*380+20-cam;rect(x,428,110,4,'#736b59');rect(x+4,432,106,2,'#3c3d3e');rect(x+72,375,77,3,'#4b5357');rect(x+82,380,57,2,'#666262');rect(x+91,386,44,2,'#44575c');}
+      rect(0,520,W,4,'#48454a');rect(0,524,W,worldBottom-524,'#1b222b');
     }else if(level===1){
       poly([[0,350],[W,350],[W,373],[0,385]],'#46503a');
-      for(let i=0;i<100;i++){const x=(i*29-cam*.98)%W,y=360+hash(i+25)*176;rect(x,y,3,3,['#62704a','#7e7950','#263d31'][i%3]);}
+      for(let i=0;i<100;i++){const x=((i*29-cam*.98)%W+W)%W,y=360+hash(i+25)*(worldBottom-364);rect(x,y,3,3,['#62704a','#7e7950','#263d31'][i%3]);}
       for(let i=0;i<45;i++){const x=(i*71-cam)%W;rect(x,518-hash(i)*8,3,17,'#2b4534');rect(x+3,514-hash(i)*8,2,11,'#4e603e');}
     }else{
-      for(let yy=376;yy<540;yy+=54){rect(0,yy,W,2,'#222a2e');for(let i=-1;i<Math.ceil((W+cam)/220)+2;i++){const x=i*220-cam;rect(x,yy,2,54,'#222a2e');rect(x+8,yy+8,3,3,'#80685a');}}
-      for(let i=-1;i<Math.ceil((W+cam)/400)+2;i++){const x=i*400+45-cam;rect(x,396,69,19,'#1a2429');for(let j=0;j<8;j++)rect(x+4+j*8,397,3,17,'#454244');}
+      for(let yy=376;yy<worldBottom;yy+=54){rect(0,yy,W,2,'#222a2e');for(let i=Math.floor(cam/220)-1;i<Math.ceil((W+cam)/220)+2;i++){const x=i*220-cam;rect(x,yy,2,54,'#222a2e');rect(x+8,yy+8,3,3,'#80685a');}}
+      for(let i=Math.floor(cam/400)-1;i<Math.ceil((W+cam)/400)+2;i++){const x=i*400+45-cam;rect(x,396,69,19,'#1a2429');for(let j=0;j<8;j++)rect(x+4+j*8,397,3,17,'#454244');}
     }
   }
   function itemIcon(index,x,y,s=1){
@@ -386,11 +402,11 @@ export function createRenderer(canvas, assets = {}) {
   }
   function foreground(level,cam,t){
     if(level===0){
-      for(let i=-1;i<Math.ceil((W+cam)/640)+2;i++){const x=i*640+565-cam;rect(x,504,42,36,'#111c26');rect(x-3,502,48,6,'#2b3940');rect(x+5,513,3,26,'#35464a');rect(x+31,513,3,26,'#35464a');}
+      for(let i=Math.floor(cam/640)-1;i<Math.ceil((W+cam)/640)+2;i++){const x=i*640+565-cam;rect(x,504,42,36,'#111c26');rect(x-3,502,48,6,'#2b3940');rect(x+5,513,3,26,'#35464a');rect(x+31,513,3,26,'#35464a');}
     }else if(level===1){
-      for(let i=-1;i<Math.ceil((W+cam*1.05)/410)+2;i++){const x=i*410-cam*1.05;rect(x,485,18,55,'#142d29');rect(x+12,497,13,43,'#20382b');poly([[x,512],[x-28,540],[x+55,540],[x+18,512]],'#172f28');}
+      for(let i=Math.floor(cam*1.05/410)-1;i<Math.ceil((W+cam*1.05)/410)+2;i++){const x=i*410-cam*1.05;rect(x,485,18,55,'#142d29');rect(x+12,497,13,43,'#20382b');poly([[x,512],[x-28,540],[x+55,540],[x+18,512]],'#172f28');}
     }else{
-      rect(0,529,W,11,'#1d242c');for(let i=-1;i<Math.ceil((W+cam)/310)+2;i++){const x=i*310+60-cam;rect(x,522,61,6,'#78614b');for(let j=0;j<4;j++)poly([[x+j*17,522],[x+j*17+8,522],[x+j*17+3,528],[x+j*17-5,528]],'#26272c');}
+      rect(0,529,W,worldBottom-529,'#1d242c');for(let i=Math.floor(cam/310)-1;i<Math.ceil((W+cam)/310)+2;i++){const x=i*310+60-cam;rect(x,522,61,6,'#78614b');for(let j=0;j<4;j++)poly([[x+j*17,522],[x+j*17+8,522],[x+j*17+3,528],[x+j*17-5,528]],'#26272c');}
     }
   }
   function atmosphere(level,state,t){
@@ -480,7 +496,11 @@ export function createRenderer(canvas, assets = {}) {
   function render(state,dt=1/60){
     const time=state.time||0,level=clamp(state.level||0,0,2);
     const baseCamera=W<BASE_W&&state.player?state.player.x-360:(state.cameraX||0);
-    const cam=clamp(baseCamera-(W-BASE_W)/2,0,Math.max(0,WORLD_W-W));
+    const mobile=mobileFraming.enabled&&Boolean(state.mode)&&Boolean(state.player);
+    if(mobile)mobileView=updateCamera(mobileView,state,mobileFraming,state.mode==='playing'?dt:0);
+    const cam=mobile?mobileView.x:clamp(baseCamera-(W-BASE_W)/2,0,Math.max(0,WORLD_W-W));
+    const camY=mobile?mobileView.y:0;
+    worldBottom=H+Math.max(0,camY)+32;
     if(!(state.hitStop>0))lastActionTime=time;
     const t=state.hitStop>0?lastActionTime:time;
     currentLocale=SIGNS[state.locale]?state.locale:'ru';
@@ -493,6 +513,7 @@ export function createRenderer(canvas, assets = {}) {
     c.save();c.imageSmoothingEnabled=false;
     const shakePixels=Math.max(shake*22,Math.min(8,state.screenShake||0));
     if(shakePixels&&!reduceMotion)c.translate(Math.round(Math.sin(t*113)*shakePixels),Math.round(Math.cos(t*97)*shakePixels*.65));
+    c.translate(0,-camY);
     [city,forest,factory][level](cam,reduceMotion?0:t);
     for(const p of state.pickups||[])pickup(p,cam,t);
     shockwave(state,cam);
@@ -501,12 +522,26 @@ export function createRenderer(canvas, assets = {}) {
     for(const hit of state.impacts||[])impact(hit,cam);
     for(const p of state.particles||[]){c.globalAlpha=clamp(p.life/(p.maxLife||1),0,1);rect(p.x-cam,p.y,p.size||3,p.size||3,p.color||'#ffd187');}c.globalAlpha=1;
     for(const tx of state.texts||[]){c.globalAlpha=clamp(tx.life/(tx.maxLife||1)*2,0,1);label(tx.text,tx.x-cam+1,tx.y+2,tx.text.length>5?13:18,'#17202a','center');label(tx.text,tx.x-cam,tx.y,tx.text.length>5?13:18,tx.color||'#ffda96','center');}c.globalAlpha=1;
-    foreground(level,cam,t);atmosphere(level,state,t);c.restore();
+    foreground(level,cam,t);c.restore();
+    atmosphere(level,state,t);
+    if(mobile)drawEdgeWarnings(state,mobileView);
+  }
+  function drawEdgeWarnings(state,view){
+    for(const arrow of edgeIndicators(state,view,mobileFraming)){
+      const {x,y,dx,dy}=arrow;
+      c.save();c.globalAlpha=.83;
+      rect(x-14,y-13,28,26,'#14202a');
+      if(dx)poly([[x+dx*10,y],[x-dx*2,y-7],[x-dx*2,y+7]],'#e6b56c');
+      else poly([[x,y+dy*9],[x-7,y-dy*2],[x+7,y-dy*2]],'#e6b56c');
+      if(arrow.count>1)label(String(arrow.count),x-dx*7,y-5,10,'#f3ddae','center');
+      c.restore();
+    }
   }
   function drawMenu(level=0,locale='ru'){
     if(W!==BASE_W)resize(BASE_W,H);
+    mobileView=null;
     menuTime+=1/60;
     render({level,locale,time:menuTime,cameraX:120,player:{x:500,y:452,face:1,hp:120,walkTime:0},enemies:[],pickups:[],buffs:{},particles:[],texts:[]},1/60);
   }
-  return {render,drawMenu,itemIcon,resize};
+  return {render,drawMenu,itemIcon,resize,setMobileFraming,getCameraView:()=>mobileView?{...mobileView}:null};
 }

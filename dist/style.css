@@ -88,12 +88,12 @@ button,a,summary{touch-action:manipulation}
 #fullscreen #fullscreen-symbol{font-size:22px;color:inherit;margin:0}
 #install-label{font:9px var(--mono);color:inherit;margin:0}
 body.ios:not(.standalone) #fullscreen{width:86px;min-width:86px;padding-inline:8px;display:flex;align-items:center;justify-content:center;font-size:9px}
-#bag-toggle,#joystick-zone{display:none}
+#bag-toggle,#joystick-zone,#joystick-home{display:none}
 @media(max-width:800px){.app-shell{padding-inline:16px}}
 @media(max-width:540px){.app-shell{padding-inline:10px}}
-/* Fixed-size world letterboxes inside the visual viewport. */
+/* The active phone arena fills the visual viewport; controls float above it. */
 body.handheld.session-active{overscroll-behavior:none;touch-action:none}
-body.handheld.landscape.session-active{--action-size:60px;--arc-width:calc(var(--action-size)*2.25);--arc-height:calc(var(--action-size)*3);--left-control-rail:136px;--right-control-rail:calc(var(--arc-width) + 32px);background:#080d13}
+body.handheld.landscape.session-active{--action-size:56px;--cluster-size:calc(var(--action-size)*2.65);background:#080d13}
 body.handheld.landscape.session-active .app-shell{display:block;padding:0;overflow:hidden;direction:ltr;touch-action:none}
 body.handheld.landscape.session-active main,
 body.handheld.landscape.session-active .topbar,
@@ -112,7 +112,8 @@ body.handheld.landscape.session-active footer{display:none}
 body.handheld.landscape.session-active .cabinet,
 body.handheld.landscape.session-active .screen,
 body.handheld.landscape.session-active .screen.in-game{position:fixed;left:var(--viewport-left,0px);top:var(--viewport-top,0px);right:auto;bottom:auto;display:block;width:var(--viewport-width,100vw);height:var(--viewport-height,100dvh);min-height:0;max-height:none;min-width:0;aspect-ratio:auto;margin:0;padding:0;border:0;box-shadow:none;isolation:auto;z-index:auto;background:#080d13;overflow:visible;touch-action:none}
-body.handheld.landscape.session-active canvas{position:absolute;left:calc(var(--left-control-rail) + env(safe-area-inset-left,0px));top:0;display:block;width:calc(100% - var(--left-control-rail) - var(--right-control-rail) - env(safe-area-inset-left,0px) - env(safe-area-inset-right,0px));height:100%;object-fit:contain;outline-offset:-3px;touch-action:none;background:#080d13;box-shadow:-1px 0 0 #ffffff0d,1px 0 0 #ffffff0d}
+body.handheld.landscape.session-active canvas{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:fill;outline-offset:-3px;touch-action:none;background:transparent;box-shadow:none}
+body.handheld.session-active .screen canvas:focus-visible{outline:none}
 body.handheld.landscape.session-active #sound,
 body.handheld.landscape.session-active #fullscreen,
 body.handheld.landscape.session-active #pause{position:fixed;top:calc(var(--viewport-top,0px) + 8px + env(safe-area-inset-top,0px));height:36px;margin:0;z-index:20;background:#14202baa;border:1px solid #84929b66;box-shadow:0 2px 0 #05080b44;border-radius:7px;backdrop-filter:blur(5px)}
@@ -126,26 +127,31 @@ body.ios.landscape.session-active:not(.standalone) #sound{right:calc(var(--view-
 body.ios.standalone.landscape.session-active #pause{right:calc(var(--view-right) + 12px + env(safe-area-inset-right,0px))}
 body.ios.standalone.landscape.session-active #sound{right:calc(var(--view-right) + 58px + env(safe-area-inset-right,0px))}
 body.handheld.landscape.session-active #joystick-zone{position:fixed;display:block;left:calc(var(--viewport-left,0px) + 8px + env(safe-area-inset-left,0px));top:calc(var(--viewport-top,0px) + 84px + env(safe-area-inset-top,0px));width:calc(var(--viewport-width,100vw)*.5 - 16px - env(safe-area-inset-left,0px));height:calc(var(--viewport-height,100dvh) - 112px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));z-index:10;touch-action:none;direction:ltr;user-select:none}
+body.handheld.landscape.session-active #joystick-home{display:block;position:fixed;left:calc(var(--viewport-left,0px) + 8px + env(safe-area-inset-left,0px));bottom:calc(var(--view-bottom) + 28px + env(safe-area-inset-bottom,0px));width:132px;height:120px;pointer-events:none;visibility:hidden}
 .joystick-base{position:fixed;left:calc(var(--viewport-left,0px) + 88px + env(safe-area-inset-left,0px));top:calc(var(--viewport-top,0px) + var(--viewport-height,100dvh) - 80px - env(safe-area-inset-bottom,0px));width:104px;height:104px;transform:translate(-50%,-50%);border:1px solid #e0ece858;border-radius:50%;background:#16304455;box-shadow:inset 0 0 24px #0003,0 0 0 8px #adcbdc08;pointer-events:none}
 .joystick-ring{position:absolute;inset:13px;border:1px solid #dfebe82c;border-radius:50%}
 .joystick-stick{position:absolute;left:50%;top:50%;width:48px;height:48px;transform:translate(-50%,-50%);border:1px solid #d7e9e788;border-radius:50%;background:linear-gradient(145deg,#779ca6b8,#243c4dd9);box-shadow:inset 0 1px 3px #ffffff33,0 4px 9px #0005;pointer-events:none}
 .joystick-active .joystick-base{border-color:#e0f2ed99;background:#173c526f}
-body.handheld.landscape.session-active .touch-actions{position:fixed;display:block;right:calc(var(--view-right) + 20px + env(safe-area-inset-right,0px));bottom:calc(var(--view-bottom) + 28px + env(safe-area-inset-bottom,0px));z-index:12;width:var(--arc-width);height:var(--arc-height);max-width:none;margin:0;direction:ltr;touch-action:none}
-body.handheld.landscape.session-active .touch-actions button{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:var(--action-size);height:var(--action-size);min-width:0;min-height:0;margin:0;padding:4px;border:1px solid #c3d5d47a;border-radius:50%;background:linear-gradient(145deg,#2d4655ad,#0f1e2bb5);box-shadow:inset 0 1px 0 #ffffff1c,0 3px 8px #0004;font-size:9px;line-height:1.1;letter-spacing:0;backdrop-filter:blur(4px);touch-action:none}
-body.handheld.landscape.session-active .touch-actions [data-control="punch"]{left:0;top:calc(var(--action-size)*.9);--face-color:#f1a2d3}
-body.handheld.landscape.session-active .touch-actions [data-control="throw"]{left:calc(var(--action-size)*.9);top:0;--face-color:#6fe3a5}
-body.handheld.landscape.session-active .touch-actions [data-control="kick"]{left:calc(var(--action-size)*1.25);top:calc(var(--action-size)*1.1);--face-color:#ff8e8e}
-body.handheld.landscape.session-active .touch-actions [data-control="dodge"]{left:calc(var(--action-size)*.3);top:calc(var(--action-size)*2);--face-color:#82baff}
+body.handheld.landscape.session-active .touch-actions{position:fixed;display:block;right:calc(var(--view-right) + 20px + env(safe-area-inset-right,0px));bottom:calc(var(--view-bottom) + 28px + env(safe-area-inset-bottom,0px));z-index:12;width:var(--cluster-size);height:var(--cluster-size);max-width:none;margin:0;direction:ltr;touch-action:none}
+body.handheld.landscape.session-active .touch-actions button{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:var(--action-size);height:var(--action-size);min-width:0;min-height:0;margin:0;padding:4px;border:1px solid #d4e7e477;border-radius:50%;background:#10283830;box-shadow:inset 0 1px 0 #ffffff12,0 1px 6px #0002;font-size:9px;line-height:1.1;letter-spacing:0;backdrop-filter:none;text-shadow:0 1px 4px #000;touch-action:none}
+body.handheld.landscape.session-active .touch-actions [data-control="punch"]{left:0;top:calc(var(--action-size)*.825);--face-color:#f1a2d3}
+body.handheld.landscape.session-active .touch-actions [data-control="throw"]{left:calc(var(--action-size)*.825);top:0;--face-color:#6fe3a5}
+body.handheld.landscape.session-active .touch-actions [data-control="kick"]{left:calc(var(--action-size)*1.65);top:calc(var(--action-size)*.825);--face-color:#ff8e8e}
+body.handheld.landscape.session-active .touch-actions [data-control="dodge"]{left:calc(var(--action-size)*.825);top:calc(var(--action-size)*1.65);--face-color:#82baff}
 body.handheld.landscape.session-active .pad-symbol{display:block;font:31px/.9 Arial,sans-serif;color:var(--face-color);font-weight:500}
 body.handheld.landscape.session-active .pad-label{display:block;font:8px/1.1 var(--mono);letter-spacing:0;color:#e5ede8;max-width:100%;white-space:nowrap}
-body.handheld.landscape.session-active .pad-shoulder{position:fixed;z-index:12;display:flex;align-items:center;justify-content:center;gap:8px;width:106px;min-width:0;height:34px;min-height:34px;padding:4px 8px;border:1px solid #a8c0c761;border-radius:12px;background:#203644a8;box-shadow:0 2px 0 #0004;backdrop-filter:blur(4px);font:8px var(--mono);touch-action:none}
-body.handheld.landscape.session-active .shoulder-left{left:calc(var(--viewport-left,0px) + 16px + env(safe-area-inset-left,0px));right:auto;bottom:calc(var(--view-bottom) + 160px + env(safe-area-inset-bottom,0px));width:100px}
-body.handheld.landscape.session-active .shoulder-right{right:calc(var(--view-right) + 28px + env(safe-area-inset-right,0px));left:auto;bottom:calc(var(--view-bottom) + 38px + var(--arc-height) + env(safe-area-inset-bottom,0px))}
+body.handheld.landscape.session-active .pad-shoulder{position:fixed;z-index:12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:56px;min-width:0;height:44px;min-height:44px;padding:9px 5px;border:0;border-radius:13px;background:transparent;box-shadow:none;isolation:isolate;backdrop-filter:none;font:7px var(--mono);text-shadow:0 1px 3px #000;touch-action:none}
+body.handheld.landscape.session-active .pad-shoulder::before{content:"";position:absolute;inset:6px 0;border:1px solid #d3e5df70;border-radius:13px;background:#142b3a30;box-shadow:0 1px 6px #0002;z-index:-1;pointer-events:none}
+body.handheld.landscape.session-active .shoulder-left{left:calc(var(--viewport-left,0px) + 28px + env(safe-area-inset-left,0px));right:auto;bottom:calc(var(--view-bottom) + 156px + env(safe-area-inset-bottom,0px))}
+body.handheld.landscape.session-active .shoulder-right{right:calc(var(--view-right) + 24px + env(safe-area-inset-right,0px));left:auto;bottom:calc(var(--view-bottom) + 36px + var(--cluster-size) + env(safe-area-inset-bottom,0px))}
 body.handheld.landscape.session-active .pad-shoulder b{font:11px var(--mono);font-weight:700;color:#dce8e6;display:block;margin:0}
 body.handheld.landscape.session-active .touch-controls button.pressed{background:#627f8bd9;border-color:#ecf7ed;color:#fff;box-shadow:inset 0 2px 4px #00162266;transform:translateY(2px)}
-body.handheld.landscape.session-active .touch-actions button.pressed{border-color:var(--face-color);background:#304a59e0}
+body.handheld.landscape.session-active .touch-actions button.pressed{border-color:var(--face-color);background:#426c875c}
 body.handheld.landscape.session-active .touch-controls button:disabled{opacity:.35}
-body.handheld.landscape.session-active .touch-controls .special-button.ready{background:#875a20bb;border-color:#ffda8f;color:#fff3d3;box-shadow:0 0 15px #ffb44b33}
+body.handheld.landscape.session-active .touch-controls .pad-shoulder.pressed,
+body.handheld.landscape.session-active .touch-controls .special-button.ready{background:transparent;border:0;box-shadow:none}
+body.handheld.landscape.session-active .pad-shoulder.pressed::before{background:#426c875c;border-color:#ecf7ed;box-shadow:inset 0 2px 4px #00162266}
+body.handheld.landscape.session-active .special-button.ready::before{background:#875a2048;border-color:#ffda8f;box-shadow:0 0 12px #ffb44b22}
 body.handheld.landscape.session-active #bag-toggle{position:fixed;display:flex;align-items:center;justify-content:center;gap:6px;right:calc(var(--view-right) + 12px + env(safe-area-inset-right,0px));top:calc(var(--viewport-top,0px) + 52px + env(safe-area-inset-top,0px));z-index:24;min-height:36px;padding:5px 10px;border:1px solid #9ab2bc70;border-radius:7px;background:#142633b8;backdrop-filter:blur(5px);font:9px var(--mono);color:var(--ink)}
 .bag-toggle svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
 body.handheld.landscape.session-active #bag-toggle[aria-expanded="true"]{border-color:var(--orange);color:#f5bf80;background:#27313de8}
@@ -166,12 +172,12 @@ body.handheld.landscape.session-active .item-count,
 body.handheld.landscape.session-active .item-key{display:none}
 body.handheld.landscape.session-active .item:disabled{opacity:.4}
 body.handheld.landscape.session-active .hud{position:fixed;left:var(--viewport-left,0px);top:var(--viewport-top,0px);right:auto;bottom:auto;width:var(--viewport-width,100vw);height:var(--viewport-height,100dvh);padding:0;z-index:8;pointer-events:none}
-body.handheld.landscape.session-active .player-hud{position:absolute;left:calc(12px + env(safe-area-inset-left,0px));right:auto;top:calc(12px + env(safe-area-inset-top,0px));width:min(28vw,210px);max-width:none}
+body.handheld.landscape.session-active .player-hud{position:absolute;left:calc(12px + env(safe-area-inset-left,0px));right:auto;top:calc(12px + env(safe-area-inset-top,0px));width:min(25vw,170px);max-width:none}
 body.handheld.landscape.session-active .hp-label{font-size:10px}
 body.handheld.landscape.session-active .hp-label span{font-size:8px}
-body.handheld.landscape.session-active .health-track{height:10px;margin:5px 0}
-body.handheld.landscape.session-active .rage-label{font-size:7px;margin-top:4px}
-body.handheld.landscape.session-active .rage-track{height:5px;margin:4px 0 5px}
+body.handheld.landscape.session-active .health-track{height:8px;margin:4px 0}
+body.handheld.landscape.session-active .rage-label{font-size:6px;margin-top:3px}
+body.handheld.landscape.session-active .rage-track{height:4px;margin:3px 0 4px}
 body.handheld.landscape.session-active .run-hud{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));left:49%;transform:translateX(-50%);width:110px;text-align:center;font-size:8px;gap:3px}
 body.handheld.landscape.session-active .run-hud strong{font-size:20px}
 body.handheld.landscape.session-active .buffs{gap:3px}
@@ -193,8 +199,8 @@ html[dir="rtl"] body.handheld.landscape.session-active .item-info{direction:rtl}
 html[dir="rtl"] body.handheld.landscape.session-active .item-name{font-size:10px}
 html[dir="rtl"] body.handheld.landscape.session-active .buff-tag{font-size:8px}
 @media(max-width:700px) and (orientation:landscape){body.handheld.landscape.session-active{--action-size:56px}}
-@media(min-width:1000px) and (orientation:landscape){body.handheld.landscape.session-active{--action-size:64px}}
-@media(max-height:345px) and (orientation:landscape){body.handheld.landscape.session-active{--action-size:56px}body.handheld.landscape.session-active #bag-toggle{right:calc(var(--view-right) + var(--right-control-rail) + 12px + env(safe-area-inset-right,0px))}}
+@media(min-width:1000px) and (orientation:landscape){body.handheld.landscape.session-active{--action-size:60px}}
+
 /* The phone menu remains scrollable; its start button fits the first landscape view. */
 body.handheld.landscape:not(.session-active) .app-shell{width:var(--viewport-width,100vw);padding-inline:12px}
 body.handheld.landscape:not(.session-active) .topbar{padding:8px 0;gap:10px;flex-wrap:nowrap}

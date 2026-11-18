@@ -42,14 +42,15 @@
 <p id="standalone-hint" class="standalone-hint" data-i18n="standaloneHint" hidden></p>
 <div class="touch-controls" dir="ltr" data-i18n-aria="touch" aria-label="Сенсорное управление">
  <div class="touch-cluster touch-move">
-  <button class="pad-shoulder shoulder-left" data-control="crouch" disabled><b aria-hidden="true">L1</b><span data-i18n="crouch">ПРИСЕСТЬ</span></button>
+  <button id="crouch-control" class="pad-shoulder shoulder-left" data-control="crouch" disabled><b aria-hidden="true">L1</b><span data-i18n="crouch">ПРИСЕСТЬ</span></button>
   <div id="joystick-zone" class="joystick-zone" role="group" data-i18n-aria="joystick" aria-label="Джойстик движения">
+   <div id="joystick-home" aria-hidden="true"></div>
    <div id="joystick-base" class="joystick-base" aria-hidden="true" hidden><div class="joystick-ring"></div><div id="joystick-stick" class="joystick-stick"></div></div>
   </div>
  </div>
  <div class="touch-cluster touch-combat">
-  <button class="pad-shoulder shoulder-right special-button" data-control="special" disabled><b aria-hidden="true">R1</b><span data-i18n="special">ЯРОСТЬ</span></button>
-  <div class="touch-actions gamepad-face" role="group" data-i18n-aria="combatControls" aria-label="Боевые кнопки">
+  <button id="rage-control" class="pad-shoulder shoulder-right special-button" data-control="special" disabled><b aria-hidden="true">R1</b><span data-i18n="special">ЯРОСТЬ</span></button>
+  <div id="combat-controls" class="touch-actions gamepad-face" role="group" data-i18n-aria="combatControls" aria-label="Боевые кнопки">
    <button data-control="throw" class="face-triangle" disabled><span class="pad-symbol" aria-hidden="true">△</span><span class="pad-label" data-i18n="throw">БРОСОК</span></button>
    <button data-control="kick" class="face-circle" disabled><span class="pad-symbol" aria-hidden="true">○</span><span class="pad-label" data-i18n="kick">НОГА</span></button>
    <button data-control="dodge" class="face-cross" disabled><span class="pad-symbol" aria-hidden="true">×</span><span class="pad-label" data-i18n="dodge">РЫВОК</span></button>
